@@ -1,5 +1,5 @@
-const bcrypt = require("bcrypt");
-const response = require("../../utility/Response/response");
+const bcrypt = require("../../../utility/bcrypt/bcrypt");
+const response = require("../../../utility/Response/response");
 const SALT = process.env.SALT || 10;
 
 
