@@ -23,6 +23,8 @@ const session = async (req, res, next) => {
                         status: 201,
                         result: createToken
                     })
+
+                    process.env.PHONE = user.phone;
                     process.env.USER_ID = user._id;
                     next();
                 } else {

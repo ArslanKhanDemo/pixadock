@@ -25,7 +25,7 @@ const Login = require("../../Controllers/User/userControllers").Login;
 Router.get("/user/login",find,sessionCreation,Login);
 
 
-/*********** LoginOut Route  *************/
+/*********** LogOut Route  *************/
 
 const logOut = require("../../Controllers/User/userControllers").logOut;
 Router.delete("/user/logout",auth_Middleware,logOut);
@@ -42,8 +42,20 @@ Router.delete("/user/logout",auth_Middleware,logOut);
 
 /*********** numberVerification Route  *************/
 
-const numberVerified = require("../../Controllers/User/userControllers").numberVerification;
-Router.get("/user/numberverified",numberVerified);
+const sendCode = require("../../Controllers/User/userControllers").sendCode;
+Router.post("/user/sendcode",auth_Middleware,sendCode);
+
+
+
+
+
+/*********** verification_Code_Submit Route  *************/
+
+const verification_Code_Submit = require("../../Controllers/User/userControllers").verification_Code_Submit;
+Router.post("/user/codesubmit",auth_Middleware,verification_Code_Submit);
+
+
+
 
 
 /*********** dbEmpty Route  *************/

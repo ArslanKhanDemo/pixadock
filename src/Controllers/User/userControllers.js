@@ -21,7 +21,7 @@ const user_registration = async (req, res) => {
 
 
         let create = await userSchema.create({
-            phone,
+            phone:"+92"+phone,
             firstName,
             lastName,
             userName,
@@ -77,22 +77,25 @@ const Login = async (req, res) => {
 const logOut = async (req, res) => {
     try {
         console.log();
-        if (process.env.USER_ID) {
+        if (process.env.USER_ID) { // if system continues without any cutoff
             let distroySession = await tokenSchema.findOneAndDelete({ userID: process.env.USER_ID });
-            console.log("with process.env.USER_ID");
+            console.log("with process.env.USER_ID / if system continues without any cutoff");
             response(res, 200, {
                 status: 200,
-                result: distroySession
+                result: distroySession.userID,
+                State:"Logged Out Successfully"
             })
         } else {
+            // if system cutoff or changes its state / codeChange.
             let distroySession = await tokenSchema.findOneAndDelete({ token: process.env.token });
-            console.log("with process.env.token");
+            console.log("with process.env.token / if system cutoff or changes its state / codeChange.");
             response(res, 200, {
                 status: 200,
-                result: distroySession
+                result: distroySession.userID,
+                State:"Logged Out Successfully"
             })
         }
-    } catch (error) {   
+    } catch (error) {
         response(res, 500, {
             status: 500,
             error: error.message
@@ -102,7 +105,6 @@ const logOut = async (req, res) => {
 /*********** LoginOut Ends  *************/
 
 
-   
 
 
 
@@ -124,19 +126,73 @@ const logOut = async (req, res) => {
 
 
 
-/*********** Number Verification api  *************/
-const numberVerification = async (req, res) => {
+
+/*********** sendCode api Start *************/
+const sendCode = async (req, res) => {
     try {
-        process.env.verified = true; // first we need verifi the number by an OTP
-        //  THEN it changes the verifiedNumber field to true 
-        //   only then a scecific user will be able himself on the site.
-        console.log("process.env.verified:", process.env.verified);
+        let userPhone = process.env.PHONE;
+        console.log("UserPhone:",userPhone);
+        let twilio = require('../../utility/twilio/twilio');
+        const CODE = require("../../utility/verificationCodeGenerator/codeGenerator")();
+        console.log(CODE);
+        twilio(req, res,userPhone, CODE);
     } catch (error) {
-        Response(res, 200, error.message);
-
+        Response(res, 500, error.message);
     }
 }
-/*********** Number Verification api Ends  *************/
+/*********** sendCode api Ends *************/
+
+
+
+
+
+
+/*********** verification_Code_Submit api Start  *************/
+
+const verification_Code_Submit = async (req, res) => {
+    try {
+        let {code} = req.body;
+        let verifier =  require("../../helper/twilioVerifier/twilioVerifier");
+        let result = verifier(code);
+        console.log(result);
+        if (result) {
+            let verified = await userSchema.findByIdAndUpdate(process.env.USER_ID,{
+                phoneVerified:true
+            },{new:true});
+            if (verified) {
+                response(res,200,{
+                    status: 200,
+                result:verified,
+            })
+        } else {
+            response(res,204,{
+                status: 204,
+                result:"Not Found",
+            })
+        }
+    } 
+    //console.log(result);
+    else {
+            response(res,200,{
+                status: 200,
+                result:"Wrong Code, Not Verified",
+           });
+        }
+        //res.end();
+        
+    } catch (error) {
+        Response(res, 500, error.message);
+    }
+}
+
+/*********** erification_Code_Submit Ends  *************/
+
+
+
+
+
+
+
 
 
 
@@ -160,7 +216,8 @@ const dbEmpty = async (req, res) => {
 module.exports = {
     user_registration,
     Login,
-    numberVerification,
+    sendCode,
     dbEmpty,
-    logOut
+    logOut,
+    verification_Code_Submit
 }
