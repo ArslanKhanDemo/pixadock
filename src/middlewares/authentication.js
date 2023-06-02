@@ -10,16 +10,16 @@ const authToken = async (req, res, next) => {
         console.log("From authentication Middleware start");
         let barrerToken = req.headers["authorization"];
         let token = barrerToken && barrerToken.split(" ")[1];
-        token != null ? console.log("tokenzzzz:",token):console.log("Token Is Null");
+        //token != null ? console.log("tokenzzzz:",token):console.log("Token Is Null");
         
         if (token == null) {
-            console.log("The Token Is NULL");
+            //console.log("The Token Is NULL");
             response(res, 404, {
                 status: 404,
-                result: "Authentication Error"
+                result: "No Token"
             });
         } else {
-            console.log("inside token:",token);
+            //console.log("inside token:",token);
             let tokenFound = await tokenSchema.findOne({token:token});
             if (tokenFound) {
                 if (tokenFound.token === token) {

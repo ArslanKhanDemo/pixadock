@@ -1,13 +1,14 @@
-const Response = require("../../utility/Response/response");
+
 const userSchema = require("../../models/userSchema/userSchema");
 const tokenSchema = require("../../models/tokenSchema/tokenSchema");
 const response = require("../../utility/Response/response");
-
+const bcrypt = require("../../utility/bcrypt/bcrypt");
 
 /*********** Registration  *************/
 const user_registration = async (req, res) => {
     try {
         const {
+            contryCode,
             phone,
             firstName,
             lastName,
@@ -21,7 +22,7 @@ const user_registration = async (req, res) => {
 
 
         let create = await userSchema.create({
-            phone:"+92"+phone,
+            phone: "+" + contryCode + phone,
             firstName,
             lastName,
             userName,
@@ -37,16 +38,17 @@ const user_registration = async (req, res) => {
             result: create,
             Status: 200
         }
-        Response(res, 200, result);
+        response(res, 200, result);
     } catch (error) {
         console.log({ error: error });
-        Response(res, 500, {
+        response(res, 500, {
             status: 500,
             message: error.message
         });
     }
 }
 /*********** Registration - Ends *************/
+
 
 
 
@@ -70,6 +72,28 @@ const Login = async (req, res) => {
 
 
 
+/*********** Update Starts  *************/
+const Update = async (req, res) => {
+    try {
+        try {
+            let updatedRecord = await userSchema.findOneAndUpdate(
+                { _id: process.env.USER_ID },
+                req.body,
+                { new: true }
+            );
+            response(res, 201, updatedRecord);
+        } catch (error) {
+            console.log(error.message);
+            response(res, 500, error.message);
+        }
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            error: error.message
+        })
+    }
+}
+/*********** Update Ends  *************/
 
 
 
@@ -83,7 +107,7 @@ const logOut = async (req, res) => {
             response(res, 200, {
                 status: 200,
                 result: distroySession.userID,
-                State:"Logged Out Successfully"
+                State: "Logged Out Successfully"
             })
         } else {
             // if system cutoff or changes its state / codeChange.
@@ -92,7 +116,7 @@ const logOut = async (req, res) => {
             response(res, 200, {
                 status: 200,
                 result: distroySession.userID,
-                State:"Logged Out Successfully"
+                State: "Logged Out Successfully"
             })
         }
     } catch (error) {
@@ -131,13 +155,13 @@ const logOut = async (req, res) => {
 const sendCode = async (req, res) => {
     try {
         let userPhone = process.env.PHONE;
-        console.log("UserPhone:",userPhone);
+        console.log("UserPhone:", userPhone);
         let twilio = require('../../utility/twilio/twilio');
         const CODE = require("../../utility/verificationCodeGenerator/codeGenerator")();
         console.log(CODE);
-        twilio(req, res,userPhone, CODE);
+        twilio(req, res, userPhone, CODE);
     } catch (error) {
-        Response(res, 500, error.message);
+        response(res, 500, error.message);
     }
 }
 /*********** sendCode api Ends *************/
@@ -151,50 +175,41 @@ const sendCode = async (req, res) => {
 
 const verification_Code_Submit = async (req, res) => {
     try {
-        let {code} = req.body;
-        let verifier =  require("../../helper/twilioVerifier/twilioVerifier");
+        let { code } = req.body;
+        let verifier = require("../../helper/twilioVerifier/twilioVerifier");
         let result = verifier(code);
         console.log(result);
         if (result) {
-            let verified = await userSchema.findByIdAndUpdate(process.env.USER_ID,{
-                phoneVerified:true
-            },{new:true});
+            let verified = await userSchema.findByIdAndUpdate(process.env.USER_ID, {
+                phoneVerified: true
+            }, { new: true });
             if (verified) {
-                response(res,200,{
+                response(res, 200, {
                     status: 200,
-                result:verified,
-            })
-        } else {
-            response(res,204,{
-                status: 204,
-                result:"Not Found",
-            })
+                    result: verified,
+                })
+            } else {
+                response(res, 204, {
+                    status: 204,
+                    result: "Not Found",
+                })
+            }
         }
-    } 
-    //console.log(result);
-    else {
-            response(res,200,{
+        //console.log(result);
+        else {
+            response(res, 200, {
                 status: 200,
-                result:"Wrong Code, Not Verified",
-           });
+                result: "Wrong Code, Not Verified",
+            });
         }
         //res.end();
-        
+
     } catch (error) {
-        Response(res, 500, error.message);
+        response(res, 500, error.message);
     }
 }
 
-/*********** erification_Code_Submit Ends  *************/
-
-
-
-
-
-
-
-
-
+/*********** verification_Code_Submit Ends  *************/
 
 
 
@@ -202,12 +217,70 @@ const verification_Code_Submit = async (req, res) => {
 const dbEmpty = async (req, res) => {
     try {
         let result = await userSchema.deleteMany();
-        Response(res, 200, result)
+        response(res, 200, result)
     } catch (error) {
-        Response(res, 200, error.message);
+        response(res, 200, error.message);
     }
 }
 /*********** userDB Ends  *************/
+
+
+
+
+
+
+
+
+
+
+
+/*********** deleteAccount Strats  *************/
+const deleteAccount = async (req, res) => {
+    try {
+        const { password } = req.body;
+        console.log("deleteAccount");
+        let findUser = await userSchema.findById(process.env.USER_ID)
+        let compare = await bcrypt.compare(password, findUser.password);
+        if (compare) {
+            let deletedAccount = await userSchema.findByIdAndDelete(process.env.USER_ID);
+            let distroySession = await tokenSchema.findOneAndDelete({ token: process.env.token });
+            if (deletedAccount && distroySession) {
+                response(res, 200, {
+                    status: 200,
+                    result: deletedAccount
+                })
+            } else {
+                response(res, 500, {
+                    status: 500,
+                    result: "Internal Error, Please try again after few mins. "
+                })
+            }
+        } else {
+            response(res, 404, {
+                status: 404,
+                result: "Please Provied a Correct Password"
+            })
+        }
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            error: error.message
+        })
+    }
+}
+/*********** deleteAccount Ends  *************/
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -219,5 +292,7 @@ module.exports = {
     sendCode,
     dbEmpty,
     logOut,
-    verification_Code_Submit
+    verification_Code_Submit,
+    Update,
+    deleteAccount
 }

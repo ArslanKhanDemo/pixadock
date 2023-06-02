@@ -23,7 +23,10 @@ const find = async (req,res,next)=>{
 
 
     } catch (error) {
-        
+        response(res,500,{
+            status:500,
+            result:error.message
+        });
     }
 }
 
