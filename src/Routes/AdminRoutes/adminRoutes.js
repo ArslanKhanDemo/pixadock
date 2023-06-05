@@ -5,11 +5,11 @@ const joi_Middleware = require("../../middlewares/User/joi/joi");
 const hash_password = require("../../middlewares/User/hashPassword/hashPassword");
 const unique_User = require("../../middlewares/User/uniqueUser/uniqueUser");
 const find = require("../../middlewares/User/find/find");
-const sessionCreation = require("../../middlewares/User/sessionCreation/sessionCreation");
+const sessionCreation = require("../../middlewares/sessionCreation/sessionCreation");
 const auth_Middleware = require("../../middlewares/authentication");
 const authorizeUpdation = require("../../middlewares/User/authorizeUpdation/authorizeUpdation");
-
-
+const verifyAdmin = require("../../middlewares/Admin/verifyAdmin");
+const multerMiddleware = require("../../middlewares/Multer/multer");
 
 
 
@@ -50,6 +50,12 @@ Router.post("/admin/sendcode",auth_Middleware,sendCode);
 const verification_Code_Submit = require("../../Controllers/Admin/adminController").verification_Code_Submit;
 Router.post("/admin/codesubmit",auth_Middleware,verification_Code_Submit);
 
+
+
+/*********** Add Product Route  *************/
+
+const addProduct = require("../../Controllers/Admin/adminController").addProduct;
+Router.post("/admin/addproduct",auth_Middleware,verifyAdmin,multerMiddleware.any(),addProduct);
 
 
 

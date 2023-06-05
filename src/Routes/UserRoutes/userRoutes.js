@@ -6,7 +6,7 @@ const joi_Middleware = require("../../middlewares/User/joi/joi");
 const hash_password = require("../../middlewares/User/hashPassword/hashPassword");
 const unique_User = require("../../middlewares/User/uniqueUser/uniqueUser");
 const find = require("../../middlewares/User/find/find");
-const sessionCreation = require("../../middlewares/User/sessionCreation/sessionCreation");
+const sessionCreation = require("../../middlewares/sessionCreation/sessionCreation");
 const auth_Middleware = require("../../middlewares/authentication");
 const authorizeUpdation = require("../../middlewares/User/authorizeUpdation/authorizeUpdation");
 

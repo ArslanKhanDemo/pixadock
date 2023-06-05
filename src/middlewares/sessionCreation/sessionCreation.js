@@ -1,8 +1,8 @@
 //const jwt = require("../../../utility/JsonWebToken/jsonWebToken");
-let tokenSchema = require("../../../models/tokenSchema/tokenSchema");
-let userSchema = require("../../../models/userSchema/userSchema");
+let tokenSchema = require("../../models/tokenSchema/tokenSchema");
+let userSchema = require("../../models/userSchema/userSchema");
 
-const response = require("../../../utility/Response/response");
+const response = require("../../utility/Response/response");
 
 const session = async (req, res, next) => {
 
@@ -12,7 +12,7 @@ const session = async (req, res, next) => {
         let userToken = await tokenSchema.findOne({ userID: user._id });
         try {
             if (user) {
-                let signToken = await require("../../../utility/JsonWebToken/jsonWebToken")(user.email);
+                let signToken = await require("../../utility/JsonWebToken/jsonWebToken")(user.email);
                 if (!userToken) {
                     let createToken = await tokenSchema.create({
                         token: signToken,

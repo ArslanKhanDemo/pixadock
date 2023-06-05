@@ -1,50 +1,52 @@
 const userSchema = require("../../models/userSchema/userSchema");
 const tokenSchema = require("../../models/tokenSchema/tokenSchema");
+const productSchema = require("../../models/productSchema/productSchema");
+
 const response = require("../../utility/Response/response");
 const bcrypt = require("../../utility/bcrypt/bcrypt");
 
 /*********** Registration Starts *************/
 const registration = async (req, res) => {
-try{
-    const {
-        contryCode,
-        phone,
-        firstName,
-        lastName,
-        userName,
-        email,
-        password,
-        DOB,
-        termAndConditions,
-        privacyPolicy
-    } = req.body;
+    try {
+        const {
+            contryCode,
+            phone,
+            firstName,
+            lastName,
+            userName,
+            email,
+            password,
+            DOB,
+            termAndConditions,
+            privacyPolicy
+        } = req.body;
 
 
-    let create = await userSchema.create({
-        phone: "+" + contryCode + phone,
-        firstName,
-        lastName,
-        userName,
-        email,
-        password,
-        DOB,
-        termAndConditions,
-        privacyPolicy,
-        phoneVerified: false,
-        role: "Admin"
-    });
-    let result = {
-        result: create,
-        Status: 200
+        let create = await userSchema.create({
+            phone: "+" + contryCode + phone,
+            firstName,
+            lastName,
+            userName,
+            email,
+            password,
+            DOB,
+            termAndConditions,
+            privacyPolicy,
+            phoneVerified: false,
+            role: "Admin"
+        });
+        let result = {
+            result: create,
+            Status: 200
+        }
+        response(res, 200, result);
+    } catch (error) {
+        console.log({ error: error });
+        response(res, 500, {
+            status: 500,
+            message: error.message
+        });
     }
-    response(res, 200, result);
-} catch (error) {
-    console.log({ error: error });
-    response(res, 500, {
-        status: 500,
-        message: error.message
-    });
-}
 
 }
 /*********** Registration - Ends *************/
@@ -57,6 +59,7 @@ try{
 const Login = async (req, res) => {
     try {
         console.log("Admin LoggedInn");
+
     } catch (error) {
         response(res, 500, {
             status: 500,
@@ -181,11 +184,66 @@ const verification_Code_Submit = async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*********** addProduct api Start *************/
+const addProduct = async (req, res) => {
+    try {
+
+        const { category, name, price } = req.body;
+        //console.log("IMAGE;", req.files);
+        let productCreated = await productSchema.create({
+            category: category,
+             name: name, 
+             price: price, 
+             image: req.files[0].filename,
+        });
+        if (productCreated) {
+            response(res, 201, {
+                status: 201,
+                result: productCreated
+            })
+        } else {
+            response(res, 500, {
+                status: 500,
+                result: "Internal Error"
+            });
+        }
+    } catch (error) {
+        response(res, 420, {
+            status: 420,
+            Error: error.message
+        });
+    }
+}
+/*********** addProduct api Ends *************/
+
+
+
+
+
+
+
+
+
 module.exports = {
     registration,
     Login,
     Update,
     logOut,
     sendCode,
-    verification_Code_Submit
+    verification_Code_Submit,
+    addProduct
 }

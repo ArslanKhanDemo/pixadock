@@ -3,6 +3,7 @@ const userSchema = require("../../models/userSchema/userSchema");
 const tokenSchema = require("../../models/tokenSchema/tokenSchema");
 const response = require("../../utility/Response/response");
 const bcrypt = require("../../utility/bcrypt/bcrypt");
+const productSchema = require("../../models/productSchema/productSchema");
 
 /*********** Registration  *************/
 const user_registration = async (req, res) => {
@@ -216,7 +217,7 @@ const verification_Code_Submit = async (req, res) => {
 /*********** userDB EMPTY   *************/
 const dbEmpty = async (req, res) => {
     try {
-        let result = await userSchema.deleteMany();
+        let result = await productSchema.deleteMany();
         response(res, 200, result)
     } catch (error) {
         response(res, 200, error.message);
