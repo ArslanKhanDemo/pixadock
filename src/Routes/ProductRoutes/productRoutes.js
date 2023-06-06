@@ -2,8 +2,8 @@ const Router = require("../../utility/Router");
 const tokenMiddleware = require("../../middlewares/authentication");
 
 /*********** Adding Product Route *************/
-const addProduct = require("../../Controllers/Product/product").addProduct;
-Router.post("/product/add",tokenMiddleware,addProduct);
+const approvedReviews = require("../../Controllers/Product/productController").approvedReviews;
+Router.get("/product/reviews/:id",approvedReviews);
 
 
 /*********** Adding Product Route Ends *************/

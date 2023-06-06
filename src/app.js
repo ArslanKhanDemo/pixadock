@@ -4,7 +4,6 @@ require("dotenv").config();
 let PORT = process.env.PORT || 3000;
 let HOST = process.env.HOST || "Local Host";
 
-
 const bodyParser = require('body-parser');
 // Parse JSON bodies
 app.use(bodyParser.json());

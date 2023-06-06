@@ -52,10 +52,50 @@ Router.post("/admin/codesubmit",auth_Middleware,verification_Code_Submit);
 
 
 
+
+
+
+
+/*************  ****************************************************************************/
+
+
+
+
+
+
 /*********** Add Product Route  *************/
 
 const addProduct = require("../../Controllers/Admin/adminController").addProduct;
 Router.post("/admin/addproduct",auth_Middleware,verifyAdmin,multerMiddleware.any(),addProduct);
+
+
+/*********** Update Product Route  *************/
+
+const updateProduct = require("../../Controllers/Admin/adminController").updateProduct;
+Router.patch("/admin/updateproduct",auth_Middleware,verifyAdmin,multerMiddleware.any(),updateProduct);
+
+
+/*********** delete Product Route  *************/
+
+const deleteProduct = require("../../Controllers/Admin/adminController").deleteProduct;
+Router.delete("/admin/deleteproduct",auth_Middleware,verifyAdmin,deleteProduct);
+
+
+
+/*********** get all Product catog Route  *************/
+
+const getAllCatagory = require("../../Controllers/Admin/adminController").getAllCatagory;
+Router.get("/admin/catagories",getAllCatagory);
+
+
+
+
+
+/*********** product Review submit Route  *************/
+
+const submitReview = require("../../Controllers/Admin/adminController").submitReview;
+Router.post("/admin/catagories/:id",submitReview);
+
 
 
 

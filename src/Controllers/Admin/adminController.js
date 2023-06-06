@@ -1,7 +1,7 @@
 const userSchema = require("../../models/userSchema/userSchema");
 const tokenSchema = require("../../models/tokenSchema/tokenSchema");
 const productSchema = require("../../models/productSchema/productSchema");
-
+const productReviewSchema = require("../../models/productReviewSchema/productReviewSchema");
 const response = require("../../utility/Response/response");
 const bcrypt = require("../../utility/bcrypt/bcrypt");
 
@@ -189,26 +189,19 @@ const verification_Code_Submit = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
 /*********** addProduct api Start *************/
 const addProduct = async (req, res) => {
     try {
 
-        const { category, name, price } = req.body;
-        //console.log("IMAGE;", req.files);
+        let { category, name, price } = req.body;
+        price = parseInt(price);
+
+        //console.log("IMAGE;", req);
         let productCreated = await productSchema.create({
             category: category,
-             name: name, 
-             price: price, 
-             image: req.files[0].filename,
+            name: name,
+            price: price,
+            image: req.files[0].filename,
         });
         if (productCreated) {
             response(res, 201, {
@@ -222,8 +215,8 @@ const addProduct = async (req, res) => {
             });
         }
     } catch (error) {
-        response(res, 420, {
-            status: 420,
+        response(res, 500, {
+            status: 500,
             Error: error.message
         });
     }
@@ -231,6 +224,126 @@ const addProduct = async (req, res) => {
 /*********** addProduct api Ends *************/
 
 
+
+
+
+/*********** UpdatedProduct api Start *************/
+const updateProduct = async (req, res) => {
+    try {
+        let { id, price } = req.body;
+        console.log("price: ", price, typeof price);
+        price = parseInt(price);
+        console.log("new price type: ", price, typeof price);
+        const product = await productSchema.findByIdAndUpdate(id, req.body, { new: true });
+        if (product) {
+            response(res, 201, {
+                status: 201,
+                result: product
+            })
+        } else {
+            response(res, 404, {
+                status: 404,
+                result: "Product NOT Updated"
+            })
+        }
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+
+
+/*********** UpdatedProduct api Ends *************/
+
+
+/*********** deleteProduct api Start *************/
+const deleteProduct = async (req, res) => {
+    try {
+        let { id } = req.body;
+        console.log(id);
+        const product = await productSchema.findByIdAndDelete(id);
+        if (product) {
+            response(res, 201, {
+                status: 201,
+                result: product
+            })
+        } else {
+            response(res, 404, {
+                status: 404,
+                result: "Product NOT deleted"
+            })
+        }
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** deletedProduct api Ends *************/
+
+
+
+
+
+
+
+
+/*********** get all Product catagory api Start *************/
+const getAllCatagory = async (req, res) => {
+    try {
+        let allCatagory = await productSchema.aggregate([
+            {
+                $group: {
+                    _id: '$category', // Group by the 'category' field
+                    uniqueCategories: { $addToSet: '$category' } // Create an array of unique categories
+                }
+            }
+        ]);
+        console.log(allCatagory.length);
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+
+/*********** get all Product catagory api Ends *************/
+
+
+
+/*********** Submit product Review api Start *************/
+const submitReview = async (req, res) => {
+    try {
+        let {
+            rating,
+            userName,
+            email,
+            review } = req.body;
+        console.log("req.params.id:", req.params.id);
+        let allCatagory = await productReviewSchema.create({
+            productID: req.params.id,
+            rating,
+            userName,
+            email,
+            review,
+            approved:true
+        });
+        response(res, 201, {
+            status: 201,
+            result: allCatagory
+        })
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** submit Product Review catagory api Ends *************/
 
 
 
@@ -245,5 +358,9 @@ module.exports = {
     logOut,
     sendCode,
     verification_Code_Submit,
-    addProduct
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    getAllCatagory,
+    submitReview
 }

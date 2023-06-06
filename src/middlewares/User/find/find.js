@@ -7,7 +7,7 @@ const find = async (req,res,next)=>{
       
         let email = req.body.email;
         let password = req.body.password;
-        console.log(req.body);
+       // console.log(req.body);
         let findUser = await userSchema.findOne({email});
         if (findUser) {
             let compare = await bcrypt.compare(password,findUser.password);

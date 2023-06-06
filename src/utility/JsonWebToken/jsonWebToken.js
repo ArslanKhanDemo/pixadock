@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const secret_key = process.env.SECRET || "secret_key";
-console.log("process.env.SECRET:",process.env.SECRET);
+//console.log("process.env.SECRET:",process.env.SECRET);
 //const Response = require("../utility/res");
 
 module.exports = async (email)=>{
