@@ -13,7 +13,7 @@ const find = async (req,res,next)=>{
             let compare = await bcrypt.compare(password,findUser.password);
             compare ? next() : response(res,401,{
                 status:401,
-                error:"Un_Authorized Error"
+                error:"Email or Password not correct"
             })
         } else {
             response(res,404,{

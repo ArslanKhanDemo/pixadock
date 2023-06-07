@@ -1,9 +1,10 @@
-
+const cartSchema = require("../../models/cartSchema/cartSchema");
 const userSchema = require("../../models/userSchema/userSchema");
 const tokenSchema = require("../../models/tokenSchema/tokenSchema");
 const response = require("../../utility/Response/response");
 const bcrypt = require("../../utility/bcrypt/bcrypt");
 const productSchema = require("../../models/productSchema/productSchema");
+const db = require("../../db/mongoDB/mongodb");
 
 /*********** Registration  *************/
 const user_registration = async (req, res) => {
@@ -276,6 +277,120 @@ const deleteAccount = async (req, res) => {
 
 
 
+/*********** addToCart Strats  *************/
+const addToCart = async (req, res) => {
+    let productID = req.params.id;
+    let p = productID.toString();
+    let proceed = true;
+    try {
+        let productIDss = [];
+        let currentCart = await cartSchema.findById(process.env.USER_ID);
+        for (let index = 0; index < currentCart.productIDs.length; index++) {
+            if (currentCart.productIDs[index] === p) {
+                proceed = false
+                response(res, 201, {
+                    status: 201,
+                    result: "The product is already added to your CART"
+                });
+                break;
+            }
+        }
+        if (proceed) {
+            productIDss = currentCart.productIDs;
+            productIDss.push(productID);
+            let updatedcart = await cartSchema.findByIdAndUpdate(process.env.USER_ID, {
+                productIDs: productIDss
+            }, { new: true });
+            updatedcart ? response(res, 200, { status: 200, result: updatedcart }) : console.log("No record");
+        }
+
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            error: error.message
+        })
+    }
+}
+/*********** addToCart Ends  *************/
+
+
+
+
+
+/*********** myCart Strats  *************/
+const myCart = async (req, res) => {
+
+    try {
+
+        let cartValueObj = [];
+        let price = 0;
+        let findMyCart = await cartSchema.findById(process.env.USER_ID);
+        if (findMyCart) {
+            for (let index = 0; index < findMyCart.productIDs.length; index++) {
+                let productPrice = await productSchema.findById(findMyCart.productIDs[index]);
+                price = price + productPrice.price
+                cartValueObj.push(productPrice);
+            }
+            response(res, 200, {
+                status: 200,
+                result: {
+                    cartValueObj,
+                    price
+                }
+            });
+            process.env.CART_PRICE = price;
+        } else {
+            response(res, 404, {
+                status: 404,
+                result: "You Have An Empty Cart"
+            });
+        }
+
+
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            error: error.message
+        })
+    }
+}
+/*********** myCart Ends  *************/
+
+
+
+
+
+
+
+
+
+/*********** DeleteAnItemFromCart Starts  *************/
+const deleteItem = async (req, res) => {
+    try {
+        const arr = process.env.CART_ARRAY.split(',');
+        let updatedcart = await cartSchema.findByIdAndUpdate(process.env.USER_ID, {
+            productIDs: arr
+        }, { new: true });
+        updatedcart ? response(res, 200, { status: 200, result: updatedcart }) : console.log("No record");
+        // response(res, 200, {
+        //     status: 200,
+        //     result: "deleteItem working "+req.params.id
+        // });
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: "deleteItem catch error working"
+        });
+    }
+}
+/*********** DeleteAnItemFromCart Ends  *************/
+
+
+
+
+
+
+
 
 
 
@@ -295,5 +410,8 @@ module.exports = {
     logOut,
     verification_Code_Submit,
     Update,
-    deleteAccount
+    deleteAccount,
+    addToCart,
+    myCart,
+    deleteItem
 }

@@ -7,8 +7,8 @@ const authorizeUpdation = async (req, res,next) => {
         req.body.email ||
         req.body.phoneVerified ||
         req.body.role) {
-        response(res, 200, {
-            status: 200,
+        response(res, 400, {
+            status: 400,
             message: "Un_Authorizes Request"
         })
     }else{

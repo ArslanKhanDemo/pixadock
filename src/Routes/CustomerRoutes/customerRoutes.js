@@ -9,7 +9,8 @@ const find = require("../../middlewares/User/find/find");
 const sessionCreation = require("../../middlewares/sessionCreation/sessionCreation");
 const auth_Middleware = require("../../middlewares/authentication");
 const authorizeUpdation = require("../../middlewares/User/authorizeUpdation/authorizeUpdation");
-
+const checkCart = require("../../middlewares/checkCart/checkCart");
+const cartItemDeletion = require("../../middlewares/cart/cartItemDeletion");
 
 
 
@@ -20,7 +21,6 @@ const authorizeUpdation = require("../../middlewares/User/authorizeUpdation/auth
 
 const user_registration = require("../../Controllers/Customer/customerControllers").user_registration;
 Router.post("/user/registration",joi_Middleware,hash_password,unique_User,user_registration);
-
 
 
 /*********** Login Route  *************/
@@ -82,6 +82,25 @@ Router.post("/user/codesubmit",auth_Middleware,verification_Code_Submit);
 
 const dbEmpty = require("../../Controllers/Customer/customerControllers").dbEmpty;
 Router.delete("/user/dbempty",dbEmpty);
+
+
+
+/*********** addToCart Route  *************/
+
+const addToCart = require("../../Controllers/Customer/customerControllers").addToCart;
+Router.post("/user/addtocart/:id",auth_Middleware,checkCart,addToCart);
+
+/*********** myCart Route  *************/
+
+const myCart = require("../../Controllers/Customer/customerControllers").myCart;
+Router.get("/user/mycart",auth_Middleware,myCart);
+
+
+
+/*********** deleteItem Route  *************/
+
+const deleteItem = require("../../Controllers/Customer/customerControllers").deleteItem;
+Router.delete("/user/deleteitem/:id",auth_Middleware,cartItemDeletion,deleteItem);
 
 
 module.exports = Router;
