@@ -4,7 +4,7 @@ const productSchema = require("../../models/productSchema/productSchema");
 const productReviewSchema = require("../../models/productReviewSchema/productReviewSchema");
 const response = require("../../utility/Response/response");
 const bcrypt = require("../../utility/bcrypt/bcrypt");
-
+const blogSchema = require("../../models/blogsSchema/blogsSchema");
 /*********** Registration Starts *************/
 const registration = async (req, res) => {
     try {
@@ -230,11 +230,13 @@ const addProduct = async (req, res) => {
 /*********** UpdatedProduct api Start *************/
 const updateProduct = async (req, res) => {
     try {
-        let { id, price } = req.body;
-        console.log("price: ", price, typeof price);
+        let { id, price,image } = req.body;
+        //console.log("price: ", price, typeof price);
         price = parseInt(price);
-        console.log("new price type: ", price, typeof price);
-        const product = await productSchema.findByIdAndUpdate(id, req.body, { new: true });
+        //console.log("new price type: ", price, typeof price);
+        //console.log("req.params.id: ",req.params.id);
+        console.log(req.body.category);
+        const product = await productSchema.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (product) {
             response(res, 201, {
                 status: 201,
@@ -330,7 +332,7 @@ const submitReview = async (req, res) => {
             userName,
             email,
             review,
-            approved:true
+            approved: true
         });
         response(res, 201, {
             status: 201,
@@ -345,6 +347,72 @@ const submitReview = async (req, res) => {
 }
 /*********** submit Product Review catagory api Ends *************/
 
+
+
+/*********** Adding Blogs api Start *************/
+const addBlogs = async (req, res) => {
+    try {
+
+        const {
+            heading,
+            content
+        } = req.body;
+        let blogCreated = await blogSchema.create({
+            heading,
+            image: req.files[0].filename,
+            content
+        });
+        if (blogCreated) {
+            response(res, 201, {
+                status: 201,
+                result: blogCreated
+            })
+        } else {
+            response(res, 500, {
+                status: 500,
+                result: "Internal Error from adding blog api"
+            });
+        }
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** Adding Blogs api Ends *************/
+
+
+
+
+/*********** updateBlog api Start *************/
+const updateBlog = async (req, res) => {
+    try {
+
+        let updatedBlog = await blogSchema.findByIdAndUpdate(req.params.id,req.body,{
+            new:true
+        });
+        if (updateBlog){
+            response(res, 200, {
+                status: 200,
+                result: updatedBlog
+            });
+        }else{
+            response(res, 404, {
+                status: 404,
+                result: "updateBlog Not Found ", 
+            }); 
+        }
+
+        
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** updateBlog api Ends *************/
 
 
 
@@ -362,5 +430,7 @@ module.exports = {
     updateProduct,
     deleteProduct,
     getAllCatagory,
-    submitReview
+    submitReview,
+    addBlogs,
+    updateBlog 
 }

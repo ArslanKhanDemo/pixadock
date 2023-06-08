@@ -5,6 +5,7 @@ const path = require("path");
 var Storage = multer.diskStorage({
     destination: (req, file, callback) => {
 
+        console.log("req.body from multer: ",req.body);
         callback(null, "uploads");
 
     },

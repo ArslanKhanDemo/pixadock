@@ -7,6 +7,9 @@ const response = require("../utility/Response/response");
 const authToken = async (req, res, next) => {
     try {
 
+
+        console.log("req.body from initial admin",req.body);
+
         console.log("From authentication Middleware start");
         let barrerToken = req.headers["authorization"];
         let token = barrerToken && barrerToken.split(" ")[1];
