@@ -11,6 +11,7 @@ const deleteItem = async (req,res,next)=>{
         if (cartArray[index] == id) {
             console.log(cartArray[index]);
             cartArray.pop(cartArray[index]);
+
             process.env.CART_ARRAY = cartArray;
             break;
         }
