@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="/http://localhost:5000/api/test/647f2ef0a3e8944cdfd01fe1" enctype="multipart/form-data" method="GET">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" required>
+        
+
+        <button type="submit">Submit</button>
+    </form>
+
+</body>
+
+</html>

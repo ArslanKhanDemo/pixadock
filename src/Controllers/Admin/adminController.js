@@ -3,8 +3,9 @@ const tokenSchema = require("../../models/tokenSchema/tokenSchema");
 const productSchema = require("../../models/productSchema/productSchema");
 const productReviewSchema = require("../../models/productReviewSchema/productReviewSchema");
 const response = require("../../utility/Response/response");
-const bcrypt = require("../../utility/bcrypt/bcrypt");
 const blogSchema = require("../../models/blogsSchema/blogsSchema");
+
+
 /*********** Registration Starts *************/
 const registration = async (req, res) => {
     try {
@@ -230,12 +231,12 @@ const addProduct = async (req, res) => {
 /*********** UpdatedProduct api Start *************/
 const updateProduct = async (req, res) => {
     try {
-        let { id, price,image } = req.body;
+        let { id, price, image } = req.body;
         //console.log("price: ", price, typeof price);
         price = parseInt(price);
         //console.log("new price type: ", price, typeof price);
         //console.log("req.params.id: ",req.params.id);
-        console.log(req.body.category);
+        //console.log(req.body.category);
         const product = await productSchema.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (product) {
             response(res, 201, {
@@ -389,22 +390,22 @@ const addBlogs = async (req, res) => {
 const updateBlog = async (req, res) => {
     try {
 
-        let updatedBlog = await blogSchema.findByIdAndUpdate(req.params.id,req.body,{
-            new:true
+        let updatedBlog = await blogSchema.findByIdAndUpdate(req.params.id, req.body, {
+            new: true
         });
-        if (updateBlog){
+        if (updateBlog) {
             response(res, 200, {
                 status: 200,
                 result: updatedBlog
             });
-        }else{
+        } else {
             response(res, 404, {
                 status: 404,
-                result: "updateBlog Not Found ", 
-            }); 
+                result: "updateBlog Not Found ",
+            });
         }
 
-        
+
     } catch (error) {
         response(res, 500, {
             status: 500,
@@ -414,6 +415,54 @@ const updateBlog = async (req, res) => {
 }
 /*********** updateBlog api Ends *************/
 
+
+/*********** deleteBlog api Start *************/
+const deleteBlog = async (req, res) => {
+    try {
+
+        let deleteBlog = await blogSchema.findByIdAndDelete(req.params.id, { new: true });
+        if (deleteBlog) {
+            response(res, 204, {
+                status: 204,
+                result: "deleteBlog Deleted"
+            });
+        } else {
+            response(res, 404, {
+                status: 404,
+                result: "record Not Found ",
+            });
+        }
+
+
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** deleteBlog api Ends *************/
+
+
+/*********** test api Start *************/
+const test = async (req, res) => {
+    try {
+        console.log("req.body:",Object.keys(req.body).length);
+        response(res, 200, {
+            status: 200,
+            result: req.body,
+            result2: req.files
+        });
+
+
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** test api Ends *************/
 
 
 
@@ -432,5 +481,7 @@ module.exports = {
     getAllCatagory,
     submitReview,
     addBlogs,
-    updateBlog 
+    updateBlog,
+    deleteBlog,
+    test
 }

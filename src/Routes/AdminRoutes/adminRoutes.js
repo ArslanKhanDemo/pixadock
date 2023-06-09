@@ -11,7 +11,7 @@ const authorizeUpdation = require("../../middlewares/User/authorizeUpdation/auth
 const verifyAdmin = require("../../middlewares/Admin/verifyAdmin");
 const multerMiddleware = require("../../middlewares/Multer/multer");
 const check_ReqImageFile = require("../../middlewares/req.filesObject/req.filesObject");
-
+const check_blogUpdation = require("../../middlewares/req.fileObjectforBlogs/blogUpdateVerifier");
 
 
 
@@ -74,7 +74,12 @@ Router.post("/admin/addproduct",auth_Middleware,verifyAdmin,multerMiddleware.any
 /*********** Update Product Route  *************/
 
 const updateProduct = require("../../Controllers/Admin/adminController").updateProduct;
-Router.patch("/admin/updateproduct/:id",auth_Middleware,verifyAdmin,multerMiddleware.any(),check_ReqImageFile,updateProduct);
+Router.patch("/admin/updateproduct/:id",
+auth_Middleware,
+verifyAdmin,
+multerMiddleware.any(),
+check_ReqImageFile,
+updateProduct);
 
 
 /*********** delete Product Route  *************/
@@ -91,8 +96,6 @@ Router.get("/admin/catagories",getAllCatagory);
 
 
 
-
-
 /*********** product Review submit Route  *************/
 
 const submitReview = require("../../Controllers/Admin/adminController").submitReview;
@@ -106,17 +109,25 @@ const addBlogs = require("../../Controllers/Admin/adminController").addBlogs;
 Router.post("/admin/addblogs",auth_Middleware,verifyAdmin,multerMiddleware.any(),addBlogs);
 
 
+
 /*********** update Blog Route  *************/
 
 const updateBlog = require("../../Controllers/Admin/adminController").updateBlog;
-Router.patch("/admin/updateblog/:id",auth_Middleware,verifyAdmin,multerMiddleware.any(),check_ReqImageFile,updateBlog);
+Router.patch("/admin/updateblog/:id",auth_Middleware,verifyAdmin,multerMiddleware.any(),check_blogUpdation,updateBlog);
 
 
 
+/*********** delete Blog Route  *************/
+
+const deleteBlog = require("../../Controllers/Admin/adminController").deleteBlog;
+Router.delete("/admin/delete/:id",auth_Middleware,verifyAdmin,deleteBlog);
 
 
+/*********** delete Blog Route  *************/
+
+const test = require("../../Controllers/Admin/adminController").test;
+Router.get("/test/:id",multerMiddleware.any(),check_ReqImageFile,test);
 
 
-    
 
 module.exports = Router;
