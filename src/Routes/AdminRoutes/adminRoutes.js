@@ -12,6 +12,7 @@ const verifyAdmin = require("../../middlewares/Admin/verifyAdmin");
 const multerMiddleware = require("../../middlewares/Multer/multer");
 const check_ReqImageFile = require("../../middlewares/req.filesObject/req.filesObject");
 const check_blogUpdation = require("../../middlewares/req.fileObjectforBlogs/blogUpdateVerifier");
+const fileDeleter = require("../../middlewares/fileDeleter/fileDeleter");
 
 
 
@@ -126,7 +127,7 @@ Router.delete("/admin/delete/:id",auth_Middleware,verifyAdmin,deleteBlog);
 /*********** delete Blog Route  *************/
 
 const test = require("../../Controllers/Admin/adminController").test;
-Router.get("/test/:id",multerMiddleware.any(),check_ReqImageFile,test);
+Router.get("/test/:id",fileDeleter,test);
 
 
 

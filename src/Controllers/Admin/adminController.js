@@ -447,7 +447,7 @@ const deleteBlog = async (req, res) => {
 /*********** test api Start *************/
 const test = async (req, res) => {
     try {
-        console.log("req.body:",Object.keys(req.body).length);
+        //console.log("req.body:",Object.keys(req.body).length);
         response(res, 200, {
             status: 200,
             result: req.body,
