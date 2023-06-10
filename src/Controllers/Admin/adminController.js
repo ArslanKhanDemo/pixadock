@@ -306,6 +306,10 @@ const getAllCatagory = async (req, res) => {
             }
         ]);
         console.log(allCatagory.length);
+        response(res,201,{
+            status:201,
+            result:allCatagory
+        })
     } catch (error) {
         response(res, 500, {
             status: 500,
