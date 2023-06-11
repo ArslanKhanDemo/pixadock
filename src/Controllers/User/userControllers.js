@@ -3,6 +3,5 @@ const user_registration = async (req,res)=>{
 }
 
 module.exports = {
-    
     user_registration
 }
