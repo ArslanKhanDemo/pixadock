@@ -26,7 +26,7 @@ Router.post("/admin/registration",joi_Middleware,hash_password,unique_User,regis
 
 /*********** Login Route *************/
 const Login = require("../../Controllers/Admin/adminController").Login;
-Router.get("/admin/login",find,sessionCreation,Login);
+Router.post("/admin/login",find,sessionCreation,Login);
 
 /*********** Update Route  *************/
 
@@ -37,7 +37,7 @@ Router.patch("/admin/update",auth_Middleware,authorizeUpdation,hash_password,Upd
 /*********** LogOut Route  *************/
 
 const logOut = require("../../Controllers/Admin/adminController").logOut;
-Router.delete("/admin/logout",auth_Middleware,logOut);
+Router.delete("/logout",auth_Middleware,logOut);
 
 
 
