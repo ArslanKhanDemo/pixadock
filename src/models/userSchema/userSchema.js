@@ -43,12 +43,10 @@ let userSchema = new db.Schema({
     required: true,
   },
   termAndConditions: {
-    type: Boolean,
-    required: true,
+    type: String,
   },
   privacyPolicy: {
-    type: Boolean,
-    required: true,
+    type: String,
   },
   phoneVerified: {
     type: Boolean,

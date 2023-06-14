@@ -32,6 +32,7 @@ app.use(helmet());
 /************** * Cors ***********/
 const cors = require("cors");
 app.use(cors());
+//app.use(cors("Access-Control-Allow-Origin: *"));
 
 
 

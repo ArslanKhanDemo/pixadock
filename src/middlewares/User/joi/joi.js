@@ -25,7 +25,8 @@ const JoiAuth = (req, res, next) => {
         });
         let result = value.validate(req.body);
         if (result.error) {
-            return res.status(400).json({ "Bad Request:": `${result.error}` });
+            console.log(result.error);
+            return res.status(400).json({result: `${result.error}` });
         } else {
             console.log("Good to go from joi Middleware");
             next();

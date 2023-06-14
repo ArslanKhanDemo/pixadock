@@ -42,9 +42,9 @@ const registration = async (req, res) => {
         }
         response(res, 200, result);
     } catch (error) {
-        console.log({ error: error });
-        response(res, 500, {
-            status: 500,
+        console.log({ "Error from reg": error });
+        response(res, 502, {
+            status: 501,
             message: error.message
         });
     }

@@ -11,9 +11,9 @@ try {
     let findPhone = await userSchema.findOne({phone});
     
     if (findEmail || findPhone) {
-        response(res,200,{
-            status:200,
-            result:"Email and Phone Number Already Registered"
+        response(res,409,{
+            status:409,
+            error:"Email and Phone Number Already Registered"
         })
     } else {
         console.log("Good to go from UniqueUser Middleware");
