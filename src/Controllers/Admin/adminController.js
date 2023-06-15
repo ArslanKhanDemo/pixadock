@@ -297,18 +297,25 @@ const deleteProduct = async (req, res) => {
 /*********** get all Product catagory api Start *************/
 const getAllCatagory = async (req, res) => {
     try {
-        let allCatagory = await productSchema.aggregate([
+        let allCategory = await productSchema.aggregate([
             {
-                $group: {
-                    _id: '$category', // Group by the 'category' field
-                    uniqueCategories: { $addToSet: '$category' } // Create an array of unique categories
-                }
+              $group: {
+                _id: '$category', // Group by the 'category' field.
+                uniqueCategories: { $first: '$$ROOT' } // Get the first document in each group.
+              }
+            },
+            {
+              $replaceRoot: {
+                newRoot: '$uniqueCategories' // Replace the root document with the 'uniqueCategories' object.
+              }
             }
-        ]);
-        console.log(allCatagory.length);
-        response(res,201,{
-            status:201,
-            result:allCatagory
+          ]);
+
+        console.log(allCategory.length);
+        //await productSchema.deleteMany();
+        response(res, 201, {
+            status: 201,
+            result: allCategory
         })
     } catch (error) {
         response(res, 500, {

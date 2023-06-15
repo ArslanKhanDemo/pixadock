@@ -11,8 +11,8 @@ const find = async (req,res,next)=>{
         let findUser = await userSchema.findOne({email});
         if (findUser) {
             let compare = await bcrypt.compare(password,findUser.password);
-            compare ? next() : response(res,401,{
-                status:401,
+            compare ? next() : response(res,201,{
+                status:201,
                 error:"Email or Password not correct"
             })
         } else {

@@ -19,20 +19,14 @@ const session = async (req, res, next) => {
                         userID: user._id,
                         role: user.role
                     });
-                    response(res, 201, {
-                        status: 201,
-                        result: createToken
-                    })
+                    response(res, 201,createToken)
 
                     process.env.PHONE = user.phone;
                     process.env.USER_ID = user._id;
                     next();
                 } else {
                     console.log("Already Looged Inn");
-                    response(res,201,{
-                        status:201,
-                        result:userToken
-                    })
+                    response(res,201,userToken)
                     process.env.USER_ID = user._id;
                     //console.log("process.env:",process.env);
                     next();

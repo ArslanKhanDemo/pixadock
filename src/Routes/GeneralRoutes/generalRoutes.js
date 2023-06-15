@@ -10,8 +10,15 @@ const Router = require("../../utility/Router");
 const blogs = require("../../Controllers/General/general").gettingAllBlogs;
 Router.get("/blog",blogs);
 
+/*********** Blogs Route Ends *************/
 
-/*********** Adding Product Route Ends *************/
+
+/*********** Blogs Route *************/
+
+const getspecificCatogoryProducts = require("../../Controllers/General/general").getspecificCatogoryProducts;
+Router.get("/category/:id",getspecificCatogoryProducts);
+
+/*********** Blogs Route Ends *************/
 
 
 

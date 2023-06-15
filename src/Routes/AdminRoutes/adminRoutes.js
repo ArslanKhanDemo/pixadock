@@ -83,14 +83,14 @@ check_ReqImageFile,
 updateProduct);
 
 
-/*********** delete Product Route  *************/
+/*********** Delete Product Route  *************/
 
 const deleteProduct = require("../../Controllers/Admin/adminController").deleteProduct;
 Router.delete("/admin/deleteproduct",auth_Middleware,verifyAdmin,deleteProduct);
 
 
 
-/*********** get all Product catog Route  *************/
+/*********** get all Product categories Route  *************/
 
 const getAllCatagory = require("../../Controllers/Admin/adminController").getAllCatagory;
 Router.get("/admin/catagories",getAllCatagory);
