@@ -14,6 +14,12 @@ let tokenSchema = new db.Schema({
     maxlength: 255,
     required: true,
   },
+  userName: {
+    type: String,
+    minlength: 2,
+    maxlength: 255,
+    required: true,
+  },
   role: {
     type: String,
     minlength: 2,

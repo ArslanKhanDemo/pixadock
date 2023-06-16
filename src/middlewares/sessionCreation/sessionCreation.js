@@ -17,6 +17,7 @@ const session = async (req, res, next) => {
                     let createToken = await tokenSchema.create({
                         token: signToken,
                         userID: user._id,
+                        userName: user.userName,
                         role: user.role
                     });
                     response(res, 201,createToken)
