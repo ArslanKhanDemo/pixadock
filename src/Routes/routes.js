@@ -1,3 +1,6 @@
 module.exports = (app)=>{
-    app.use("/api/user",require("../Routes/UserRoutes/userRoutes"));
+    app.use("/api",require("../Routes/AdminRoutes/adminRoutes"));
+    app.use("/api",require("./CustomerRoutes/customerRoutes"));
+    app.use("/api",require("../Routes/ProductRoutes/productRoutes"));
+    app.use("/api",require("../Routes/GeneralRoutes/generalRoutes"));
 }
