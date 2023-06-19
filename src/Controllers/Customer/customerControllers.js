@@ -324,13 +324,30 @@ const myCart = async (req, res) => {
 
         let cartValueObj = [];
         let price = 0;
+        console.log(process.env.USER_ID);
         let findMyCart = await cartSchema.findById(process.env.USER_ID);
+        console.log(findMyCart.productIDs.length);
         if (findMyCart) {
             for (let index = 0; index < findMyCart.productIDs.length; index++) {
                 let productPrice = await productSchema.findById(findMyCart.productIDs[index]);
-                price = price + productPrice.price
-                cartValueObj.push(productPrice);
+                if (productPrice) {
+                    price = price + productPrice.price
+                    cartValueObj.push(productPrice);
+
+                    console.log("Product Price:", productPrice.price);
+                    console.log("Price:", price);
+                } else {
+                    response(res, 406, {
+                        status: 406,
+                        result: {
+                            Error:findMyCart.productIDs[index] +" "+"Product Not Found"
+                        }
+                    });
+                    break;
+                }
             }
+            //console.log("Price outside:",price);
+            console.log("cartValueObj outside:", cartValueObj);
             response(res, 200, {
                 status: 200,
                 result: {
@@ -338,18 +355,18 @@ const myCart = async (req, res) => {
                     price
                 }
             });
-            process.env.CART_PRICE = price;
+            //process.env.CART_PRICE = price;
         } else {
-            response(res, 404, {
-                status: 404,
+            response(res, 405, {
+                status: 405,
                 result: "You Have An Empty Cart"
             });
         }
 
 
     } catch (error) {
-        response(res, 500, {
-            status: 500,
+        response(res, 501, {
+            status: 501,
             error: error.message
         })
     }

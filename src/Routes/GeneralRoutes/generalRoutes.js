@@ -36,6 +36,19 @@ Router.get("/blog/:id",getOneBlog);
 
 
 
+/*********** getOneProduct Route *************/
+
+const getOneProduct = require("../../Controllers/General/general").getOneProduct;
+Router.get("/product/:id",getOneProduct);
+
+
+/*********** getOneProduct Route Ends *************/
+
+
+
+
+
+
 
 
 

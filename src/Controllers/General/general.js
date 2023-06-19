@@ -84,9 +84,37 @@ const getspecificCatogoryProducts = async (req, res) => {
 
 
 
+/*********** Get One product api Start *************/
+const getOneProduct = async (req, res) => {
+    try {
+
+        let product = await productSchema.findById(req.params.id);
+        if (product) {
+            response(res, 200, {
+                status: 200,
+                result: product
+            });
+        } else {
+            response(res, 404, {
+                status: 404,
+                result: "No product found"
+            });
+        }
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** Get One product api Ends *************/
+
+
+
 
 module.exports = {
     gettingAllBlogs,
     getOneBlog,
-    getspecificCatogoryProducts
+    getspecificCatogoryProducts,
+    getOneProduct
 }
