@@ -1,5 +1,5 @@
 const Router = require("../../utility/Router");
-
+const auth_Middleware = require("../../middlewares/authentication");
 
 
 
@@ -43,6 +43,16 @@ Router.get("/product/:id",getOneProduct);
 
 
 /*********** getOneProduct Route Ends *************/
+
+
+
+/*********** getUser Route *************/
+
+const getUser = require("../../Controllers/General/general").getUser;
+Router.get("/userprofile",auth_Middleware,getUser);
+
+
+/*********** getUser Route Ends *************/
 
 
 

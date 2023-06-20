@@ -77,6 +77,7 @@ const Login = async (req, res) => {
 /*********** Update Starts  *************/
 const Update = async (req, res) => {
     try {
+        console.log(req.body);
         try {
             let updatedRecord = await userSchema.findOneAndUpdate(
                 { _id: process.env.USER_ID },

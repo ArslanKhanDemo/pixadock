@@ -1,5 +1,6 @@
 const blogsSchema = require("../../models/blogsSchema/blogsSchema");
 const productSchema = require("../../models/productSchema/productSchema");
+const userSchema = require("../../models/userSchema/userSchema");
 const response = require("../../utility/Response/response");
 
 
@@ -112,9 +113,33 @@ const getOneProduct = async (req, res) => {
 
 
 
+/*********** Get user profile api Ends *************/
+
+const getUser = async (req, res) => {
+    try {
+        try {
+            let record = await userSchema.findOne(
+                { _id: process.env.USER_ID }
+                );
+                response(res, 201, record);
+            } catch (error) {
+                console.log(error.message);
+                response(res, 500, error.message);
+            }
+        } catch (error) {
+            response(res, 500, {
+                status: 500,
+                error: error.message
+            })
+        }
+    }
+/*********** Get user profile api Ends *************/
+
+
 module.exports = {
     gettingAllBlogs,
     getOneBlog,
     getspecificCatogoryProducts,
-    getOneProduct
+    getOneProduct,
+    getUser
 }
