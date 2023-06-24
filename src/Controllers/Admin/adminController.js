@@ -1,6 +1,8 @@
 const userSchema = require("../../models/userSchema/userSchema");
 const tokenSchema = require("../../models/tokenSchema/tokenSchema");
 const productSchema = require("../../models/productSchema/productSchema");
+const categorySchema = require("../../models/categorySchema/categorySchema");
+
 const productReviewSchema = require("../../models/productReviewSchema/productReviewSchema");
 const response = require("../../utility/Response/response");
 const blogSchema = require("../../models/blogsSchema/blogsSchema");
@@ -310,7 +312,8 @@ const getAllCatagory = async (req, res) => {
         //       }
         //     }
         //   ]);
-        let allCategory = await productSchema.find();
+
+        let allCategory = await categorySchema.find();
         console.log(allCategory.length);
         //await productSchema.deleteMany();
         response(res, 201, {
@@ -475,6 +478,58 @@ const test = async (req, res) => {
 }
 /*********** test api Ends *************/
 
+/*********** Add Categories api Start *************/
+const addCategories = async (req, res) => {
+    try {
+        let {
+            categoryName,
+            parent
+        } = req.body;
+        // console.log("from admin con backEnd1:");
+        //console.log("from admin con backEnd2:",req.files[0]);
+        console.log(parent === "");
+        if(parent === ""){
+            parent = "No Parent"
+        }
+        let findCategory = await categorySchema.findOne({categoryName});
+        if (findCategory) {
+            response(res,201,{
+                status:201,
+                result:"Category Already Exist"
+            });
+        } else {
+            let categoryAdded = await categorySchema.create(
+                {
+                    image:req.files[0].filename,
+                    categoryName,
+                    parent
+                }
+            );
+            if (categoryAdded) {
+               //await categorySchema.deleteMany();
+                response(res, 201, {
+                    status: 201,
+                    result: categoryAdded
+                });
+    
+            } else {
+                response(res, 404, {
+                    status: 404,
+                    result: "Added Catrgory Not Found"
+                });
+            }
+        }
+
+
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** Add Categories api Ends *************/
+
 
 
 
@@ -494,5 +549,6 @@ module.exports = {
     addBlogs,
     updateBlog,
     deleteBlog,
-    test
+    test,
+    addCategories
 }

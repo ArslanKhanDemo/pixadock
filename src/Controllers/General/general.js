@@ -2,7 +2,7 @@ const blogsSchema = require("../../models/blogsSchema/blogsSchema");
 const productSchema = require("../../models/productSchema/productSchema");
 const userSchema = require("../../models/userSchema/userSchema");
 const response = require("../../utility/Response/response");
-
+const categorySchema = require("../../models/categorySchema/categorySchema");
 
 
 /*********** Getting All Blogs api Start *************/
@@ -62,7 +62,7 @@ const getOneBlog = async (req, res) => {
 const getspecificCatogoryProducts = async (req, res) => {
     try {
 
-        let find = await productSchema.find({category:req.params.id});
+        let find = await productSchema.find({ category: req.params.id });
         if (find) {
             response(res, 200, {
                 status: 200,
@@ -120,20 +120,40 @@ const getUser = async (req, res) => {
         try {
             let record = await userSchema.findOne(
                 { _id: process.env.USER_ID }
-                );
-                response(res, 201, record);
-            } catch (error) {
-                console.log(error.message);
-                response(res, 500, error.message);
-            }
+            );
+            response(res, 201, record);
         } catch (error) {
-            response(res, 500, {
-                status: 500,
-                error: error.message
-            })
+            console.log(error.message);
+            response(res, 500, error.message);
         }
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            error: error.message
+        })
     }
+}
 /*********** Get user profile api Ends *************/
+
+/*********** getAllCategories api Ends *************/
+
+const getAllCategories = async (req, res) => {
+
+    try {
+        let categories = await categorySchema.find();
+        console.log(categories);
+        if (categories) {
+            response(res, 201, categories);
+        } else {
+            response(res, 404, "No result");
+        }
+    } catch (error) {
+        console.log(error.message);
+        response(res, 500, error.message);
+    }
+
+}
+/*********** getAllCategories api Ends *************/
 
 
 module.exports = {
@@ -141,5 +161,6 @@ module.exports = {
     getOneBlog,
     getspecificCatogoryProducts,
     getOneProduct,
-    getUser
+    getUser,
+    getAllCategories
 }

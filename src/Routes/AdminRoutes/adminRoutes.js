@@ -130,5 +130,11 @@ const test = require("../../Controllers/Admin/adminController").test;
 Router.get("/test/:id",fileDeleter,test);
 
 
+/*********** addCategories Route  *************/
+
+const addCategories = require("../../Controllers/Admin/adminController").addCategories;
+Router.post("/admin/addcategories",auth_Middleware,verifyAdmin,multerMiddleware.any(),addCategories);
+
+
 
 module.exports = Router;

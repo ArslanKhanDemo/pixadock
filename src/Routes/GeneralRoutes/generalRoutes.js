@@ -56,6 +56,16 @@ Router.get("/userprofile",auth_Middleware,getUser);
 
 
 
+/*********** getAllCategories Route *************/
+
+const getAllCategories = require("../../Controllers/General/general").getAllCategories;
+Router.get("/categories",getAllCategories);
+
+
+/*********** getUser Route Ends *************/
+
+
+
 
 
 

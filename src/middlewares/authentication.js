@@ -8,7 +8,7 @@ const authToken = async (req, res, next) => {
     try {
 
 
-        console.log("req.body from initial admin",req.body);
+        //console.log("req.body from initial admin",req);
 
         console.log("From authentication Middleware start");
         let barrerToken = req.headers["authorization"];
