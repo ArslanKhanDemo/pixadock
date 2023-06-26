@@ -2,6 +2,7 @@ const userSchema = require("../../models/userSchema/userSchema");
 const tokenSchema = require("../../models/tokenSchema/tokenSchema");
 const productSchema = require("../../models/productSchema/productSchema");
 const categorySchema = require("../../models/categorySchema/categorySchema");
+const attributeSchema = require("../../models/attributeSchema/attributeSchema");
 
 const productReviewSchema = require("../../models/productReviewSchema/productReviewSchema");
 const response = require("../../utility/Response/response");
@@ -488,30 +489,30 @@ const addCategories = async (req, res) => {
         // console.log("from admin con backEnd1:");
         //console.log("from admin con backEnd2:",req.files[0]);
         console.log(parent === "");
-        if(parent === ""){
+        if (parent === "") {
             parent = "No Parent"
         }
-        let findCategory = await categorySchema.findOne({categoryName});
+        let findCategory = await categorySchema.findOne({ categoryName });
         if (findCategory) {
-            response(res,201,{
-                status:201,
-                result:"Category Already Exist"
+            response(res, 201, {
+                status: 201,
+                result: "Category Already Exist"
             });
         } else {
             let categoryAdded = await categorySchema.create(
                 {
-                    image:req.files[0].filename,
+                    image: req.files[0].filename,
                     categoryName,
                     parent
                 }
             );
             if (categoryAdded) {
-               //await categorySchema.deleteMany();
+                //await categorySchema.deleteMany();
                 response(res, 201, {
                     status: 201,
                     result: categoryAdded
                 });
-    
+
             } else {
                 response(res, 404, {
                     status: 404,
@@ -529,6 +530,90 @@ const addCategories = async (req, res) => {
     }
 }
 /*********** Add Categories api Ends *************/
+
+
+
+/*********** Add Attribute api Start *************/
+const addAttribute = async (req, res) => {
+    try {
+        let {
+            attributeName, slug, values
+        } = req.body;
+        let attribute = await attributeSchema.create({
+            attributeName, slug, values:[]
+        });
+        if (attribute) {
+            // await attributeSchema.deleteMany();
+            response(res, 200, attribute);
+        } else {
+            response(res, 200, "attribute not added");
+        }
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** Add Attribute api Ends *************/
+
+
+/*********** Add Attribute api Start *************/
+const updateAttribute = async (req, res) => {
+    try {
+        let matched = false;
+        let {
+            attributeName, slug, values
+        } = req.body;
+        console.log("req.prams.id:", req.params.id);
+        let find = await attributeSchema.findOne({ attributeName: req.params.id });
+        console.log(find.values.length);
+        for (let index = 0; index < find.values.length; index++) {
+
+            if (find.values[index] == values) {
+                console.log("Matched");
+                matched = true
+                break;
+            }
+        }
+        if (matched) {
+            response(res, 200, `The Veriante of ${req.params.id} is already added`);
+        } else {
+            let attribute = await attributeSchema.updateOne({ attributeName: req.params.id }, {
+                values: [...values, ...find.values]
+            });
+            if (attribute) {
+                // await attributeSchema.deleteMany();
+                response(res, 200, attribute);
+            } else {
+                response(res, 200, "attribute not added");
+            }
+        }
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** Add Attribute api Ends *************/
+
+
+
+
+
+// /*********** Add Attribute api Start *************/
+// const addAttribute = async (req, res) => {
+//     try {
+//        response(res,200,"working")
+//     } catch (error) {
+//         response(res, 500, {
+//             status: 500,
+//             result: error.message
+//         });
+//     }
+// }
+// /*********** Add Attribute api Ends *************/
 
 
 
@@ -550,5 +635,7 @@ module.exports = {
     updateBlog,
     deleteBlog,
     test,
-    addCategories
+    addCategories,
+    addAttribute,
+    updateAttribute
 }

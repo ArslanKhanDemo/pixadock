@@ -136,5 +136,16 @@ const addCategories = require("../../Controllers/Admin/adminController").addCate
 Router.post("/admin/addcategories",auth_Middleware,verifyAdmin,multerMiddleware.any(),addCategories);
 
 
+/*********** addAttribute Route  *************/
+
+const addAttribute = require("../../Controllers/Admin/adminController").addAttribute;
+Router.post("/admin/addattribute",addAttribute);
+
+/*********** updateattribute Route  *************/
+
+const updateAttribute = require("../../Controllers/Admin/adminController").updateAttribute;
+Router.patch("/admin/updateattribute/:id",updateAttribute);
+
+
 
 module.exports = Router;
