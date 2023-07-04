@@ -536,11 +536,11 @@ const addCategories = async (req, res) => {
 /*********** Add Attribute api Start *************/
 const addAttribute = async (req, res) => {
     try {
-        let {
-            attributeName, slug, values
-        } = req.body;
+        let { attributeName, slug, values } = req.body;
+        // attributeName = attributeName.toLowerCase();
+        console.log(attributeName);
         let attribute = await attributeSchema.create({
-            attributeName, slug, values:[]
+            attributeName, slug, values
         });
         if (attribute) {
             // await attributeSchema.deleteMany();
@@ -562,34 +562,52 @@ const addAttribute = async (req, res) => {
 const updateAttribute = async (req, res) => {
     try {
         let matched = false;
-        let {
-            attributeName, slug, values
-        } = req.body;
-        console.log("req.prams.id:", req.params.id);
+        // let {
+        //     attributeName, slug, values
+        // } = req.body;
+        let values = req.body.values;
+        console.log("req.prams.id:", typeof req.params.id);
+        let id = req.params.id.toString();
+        req.params.id = id.toLowerCase();
+        console.log("reached 1");
         let find = await attributeSchema.findOne({ attributeName: req.params.id });
-        console.log(find.values.length);
-        for (let index = 0; index < find.values.length; index++) {
-
-            if (find.values[index] == values) {
-                console.log("Matched");
-                matched = true
-                break;
+        if (find) {
+            console.log("length: ",find.values.length);
+            for (let index = 0; index < find.values.length; index++) {
+                
+                if (find.values[index] == values) {
+                    console.log("Matched");
+                    matched = true
+                    break;
+                }
             }
-        }
-        if (matched) {
-            response(res, 200, `The Veriante of ${req.params.id} is already added`);
-        } else {
-            let attribute = await attributeSchema.updateOne({ attributeName: req.params.id }, {
-                values: [...values, ...find.values]
-            });
-            if (attribute) {
-                // await attributeSchema.deleteMany();
-                response(res, 200, attribute);
+            console.log("reached 2");
+            if (matched) {
+                response(res, 200, `The Veriante of ${req.params.id} is already added`);
             } else {
-                response(res, 200, "attribute not added");
+                if (values == "") {
+                    response(res, 200, `The Veriante of ${req.params.id} can't be empty...`);
+                } else {
+                    console.log("reached 3");
+                    console.log("values:",values);
+                    console.log("find.values:",find.values);
+                    let attribute = await attributeSchema.updateOne({ attributeName: req.params.id }, {
+                        values: [...values, ...find.values]
+                    });
+                    console.log("reached4");
+                    if (attribute) {
+                        // await attributeSchema.deleteMany();
+                        response(res, 200, attribute);
+                    } else {
+                        response(res, 200, "attribute not added");
+                    }
+                }
             }
+        } else {
+            response(res, 404, `The attribute: ${req.params.id} is not registered`);
         }
     } catch (error) {
+        console.log(error);
         response(res, 500, {
             status: 500,
             result: error.message

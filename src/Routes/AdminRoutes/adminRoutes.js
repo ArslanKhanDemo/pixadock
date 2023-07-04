@@ -9,11 +9,11 @@ const sessionCreation = require("../../middlewares/sessionCreation/sessionCreati
 const auth_Middleware = require("../../middlewares/authentication");
 const authorizeUpdation = require("../../middlewares/User/authorizeUpdation/authorizeUpdation");
 const verifyAdmin = require("../../middlewares/Admin/verifyAdmin");
-const multerMiddleware = require("../../middlewares/Multer/multer");
+const multerMiddleware = require("../../middlewares/multer/multer");
 const check_ReqImageFile = require("../../middlewares/req.filesObject/req.filesObject");
 const check_blogUpdation = require("../../middlewares/req.fileObjectforBlogs/blogUpdateVerifier");
 const fileDeleter = require("../../middlewares/fileDeleter/fileDeleter");
-
+const attributeChecker = require("../../middlewares/product/attributeChecker");
 
 
 
@@ -139,7 +139,7 @@ Router.post("/admin/addcategories",auth_Middleware,verifyAdmin,multerMiddleware.
 /*********** addAttribute Route  *************/
 
 const addAttribute = require("../../Controllers/Admin/adminController").addAttribute;
-Router.post("/admin/addattribute",addAttribute);
+Router.post("/admin/addattribute",attributeChecker,addAttribute);
 
 /*********** updateattribute Route  *************/
 
