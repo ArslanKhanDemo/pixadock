@@ -57,6 +57,13 @@ Router.get("/product/brands",gettingBrand);
 /*********** gettingBrand Route Ends *************/
 
 
+/*********** userSearch Route *************/
+const userSearch = require("../../Controllers/Product/productController").userSearch;
+Router.get("/product/usersearch",userSearch);
+
+/*********** userSearch Route Ends *************/
+
+
 
 
 

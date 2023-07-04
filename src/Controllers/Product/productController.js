@@ -2,6 +2,7 @@ const response = require("../../utility/Response/response");
 const productReviewSchema = require("../../models/productReviewSchema/productReviewSchema");
 const productTypeSchema = require("../../models/productTypeSchema/productTypeSchema");
 const brandSchema = require("../../models/brandSchema/brandSchema");
+const userSchema = require("../../models/userSchema/userSchema");
 
 
 
@@ -149,6 +150,28 @@ const gettingBrand = async (req, res) => {
 }
 /*********** getting all brands Ends  *************/
 
+/*********** userSearch start  *************/
+const userSearch = async (req, res) => {
+    try {
+        let name = req.body.name;
+        let found = await userSchema.find({"userName":{$regex:".*"+name+".*",$options:"i"}});
+        if (found) {
+            response(res, 200, {
+                status: 200,
+                result: found
+            }) 
+        } else {
+            response(res,404,"Not Found");
+        }
+    } catch (error) {
+        response(res, 501, {
+            status: 501,
+            error: error.message
+        })
+    }
+}
+/*********** userSearch Ends  *************/
+
 
 
 
@@ -159,5 +182,6 @@ module.exports = {
     deleteProductType,
     gettingProductTypes,
     addBrand,
-    gettingBrand
+    gettingBrand,
+    userSearch
 }
