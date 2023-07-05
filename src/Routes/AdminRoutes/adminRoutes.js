@@ -14,6 +14,8 @@ const check_ReqImageFile = require("../../middlewares/req.filesObject/req.filesO
 const check_blogUpdation = require("../../middlewares/req.fileObjectforBlogs/blogUpdateVerifier");
 const fileDeleter = require("../../middlewares/fileDeleter/fileDeleter");
 const attributeChecker = require("../../middlewares/product/attributeChecker");
+const productSchema = require("../../models/productSchema/productSchema");
+const response = require("../../utility/Response/response");
 
 
 

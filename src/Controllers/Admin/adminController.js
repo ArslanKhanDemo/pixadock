@@ -197,7 +197,7 @@ const verification_Code_Submit = async (req, res) => {
 const addProduct = async (req, res) => {
     try {
 
-        let { category, name, price } = req.body;
+        let { category, name, price,attributes,stock,brand } = req.body;
         price = parseInt(price);
 
         //console.log("IMAGE;", req);
@@ -205,7 +205,9 @@ const addProduct = async (req, res) => {
             category: category,
             name: name,
             price: price,
-            image: req.files[0].filename,
+            attributes,
+            stock,
+            brand
         });
         if (productCreated) {
             response(res, 201, {
@@ -562,17 +564,21 @@ const addAttribute = async (req, res) => {
 const updateAttribute = async (req, res) => {
     try {
         let matched = false;
+        let val2 = [];
         // let {
         //     attributeName, slug, values
         // } = req.body;
         let values = req.body.values;
-        console.log("req.prams.id:", typeof req.params.id);
+        let val = values.toString().toLowerCase();
+        val2.push(val);
+        values = val2;
+        //console.log("req.prams.id:", typeof req.params.id);
         let id = req.params.id.toString();
         req.params.id = id.toLowerCase();
-        console.log("reached 1");
+        //console.log("reached 1");
         let find = await attributeSchema.findOne({ attributeName: req.params.id });
         if (find) {
-            console.log("length: ",find.values.length);
+            //console.log("length: ",find.values.length);
             for (let index = 0; index < find.values.length; index++) {
                 
                 if (find.values[index] == values) {
@@ -581,20 +587,22 @@ const updateAttribute = async (req, res) => {
                     break;
                 }
             }
-            console.log("reached 2");
+            //console.log("reached 2");
             if (matched) {
-                response(res, 200, `The Veriante of ${req.params.id} is already added`);
+                console.log(`Error: The Veriante of ${req.params.id} is already added`);
+                response(res, 409, `The Veriante of ${req.params.id} is already added`);
             } else {
                 if (values == "") {
                     response(res, 200, `The Veriante of ${req.params.id} can't be empty...`);
                 } else {
-                    console.log("reached 3");
-                    console.log("values:",values);
-                    console.log("find.values:",find.values);
+                    //console.log("reached 3");
+                    //console.log("values:",values);
+                    //console.log("val2:",val2);
+                    //console.log("find.values:",find.values);
                     let attribute = await attributeSchema.updateOne({ attributeName: req.params.id }, {
-                        values: [...values, ...find.values]
+                        values: [...val2, ...find.values]
                     });
-                    console.log("reached4");
+                    //console.log("reached4");
                     if (attribute) {
                         // await attributeSchema.deleteMany();
                         response(res, 200, attribute);

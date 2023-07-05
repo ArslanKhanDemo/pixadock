@@ -299,15 +299,17 @@ const addToCart = async (req, res) => {
         if (proceed) {
             productIDss = currentCart.productIDs;
             productIDss.push(productID);
+            console.log("reached");
             let updatedcart = await cartSchema.findByIdAndUpdate(process.env.USER_ID, {
                 productIDs: productIDss
             }, { new: true });
+            console.log("reached2");
             updatedcart ? response(res, 200, { status: 200, result: updatedcart }) : console.log("No record");
         }
 
     } catch (error) {
-        response(res, 500, {
-            status: 500,
+        response(res, 502, {
+            status: 502,
             error: error.message
         })
     }
@@ -327,7 +329,7 @@ const myCart = async (req, res) => {
         let price = 0;
         console.log(process.env.USER_ID);
         let findMyCart = await cartSchema.findById(process.env.USER_ID);
-        console.log(findMyCart.productIDs.length);
+        console.log(findMyCart);
         if (findMyCart) {
             for (let index = 0; index < findMyCart.productIDs.length; index++) {
                 let productPrice = await productSchema.findById(findMyCart.productIDs[index]);

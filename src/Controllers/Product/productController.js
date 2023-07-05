@@ -3,6 +3,8 @@ const productReviewSchema = require("../../models/productReviewSchema/productRev
 const productTypeSchema = require("../../models/productTypeSchema/productTypeSchema");
 const brandSchema = require("../../models/brandSchema/brandSchema");
 const userSchema = require("../../models/userSchema/userSchema");
+const attributeSchema = require("../../models/attributeSchema/attributeSchema");
+const productSchema = require("../../models/productSchema/productSchema");
 
 
 
@@ -150,6 +152,9 @@ const gettingBrand = async (req, res) => {
 }
 /*********** getting all brands Ends  *************/
 
+
+
+
 /*********** userSearch start  *************/
 const userSearch = async (req, res) => {
     try {
@@ -163,6 +168,7 @@ const userSearch = async (req, res) => {
         } else {
             response(res,404,"Not Found");
         }
+        //await attributeSchema.deleteMany();
     } catch (error) {
         response(res, 501, {
             status: 501,
