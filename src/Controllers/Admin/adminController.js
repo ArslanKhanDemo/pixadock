@@ -197,17 +197,18 @@ const verification_Code_Submit = async (req, res) => {
 const addProduct = async (req, res) => {
     try {
 
-        let { category, name, price,attributes,stock,brand } = req.body;
+        let { category, name, price, attributes, stock, brand } = req.body;
         price = parseInt(price);
-
-        //console.log("IMAGE;", req);
+        //attributes = JSON.parse(attributes); /** if --> form-data  */
+        console.log(req.files === undefined);
         let productCreated = await productSchema.create({
-            category: category,
-            name: name,
-            price: price,
+            category,
+            brand,
+            name,
             attributes,
             stock,
-            brand
+            price,
+            image: req.files ? req.files[0].filename : "No Path"
         });
         if (productCreated) {
             response(res, 201, {
@@ -221,6 +222,7 @@ const addProduct = async (req, res) => {
             });
         }
     } catch (error) {
+        console.log(error);
         response(res, 500, {
             status: 500,
             Error: error.message
@@ -230,39 +232,91 @@ const addProduct = async (req, res) => {
 /*********** addProduct api Ends *************/
 
 
-
+// const product = await productSchema.findOneAndUpdate(
+//     { _id: req.params.id, 'attributes.attribute': "Color" },
+//     { $set: { 'attributes.$.value': "Brown" } },
+//     { new: true });
 
 
 /*********** UpdatedProduct api Start *************/
 const updateProduct = async (req, res) => {
     try {
-        let { id, price, image } = req.body;
-        //console.log("price: ", price, typeof price);
-        price = parseInt(price);
-        //console.log("new price type: ", price, typeof price);
-        //console.log("req.params.id: ",req.params.id);
-        //console.log(req.body.category);
-        const product = await productSchema.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (product) {
-            response(res, 201, {
-                status: 201,
-                result: product
-            })
+        let isThere = false;
+        if (req.body.attribute) {
+            console.log(req.body.attribute);
+            console.log("in req.body.attribute");
+            let isAttributes = await productSchema.findById(req.params.id);
+            if (isAttributes.attributes.length === 0) {
+                console.log("In isAttribute");
+                let addAttribute = await productSchema.findOneAndUpdate({
+                    _id: req.params.id
+                }, {
+                    attributes: [{
+                        attribute: req.body.attribute,
+                        value: req.body.value
+                    }]
+                }, { new: true });
+                response(res, 201, addAttribute);
+            } else {
+                console.log("attributes array is not empty");
+                for (let index = 0; index < isAttributes.attributes.length; index++) {
+                    if (isAttributes.attributes[index].attribute === req.body.attribute) {
+                        isThere = true
+                        break;
+                    }
+                }
+                if (isThere === false) {
+                    let arr = [...isAttributes.attributes];
+                    arr.push({
+                        attribute: req.body.attribute,
+                        value: req.body.value
+                    });
+                    let s = await productSchema.findOneAndUpdate({ _id: req.params.id }, { attributes: arr },{new:true});
+                    response(res, 201, s);
+                }
+                if (isThere === true) {
+                    console.log("isThere === true");
+                    const product = await productSchema.findOneAndUpdate(
+                        { _id: req.params.id, 'attributes.attribute': `${req.body.attribute}` },
+                        { $set: { 'attributes.$.value': `${req.body.value}` } },
+                        { new: true });
+                        console.log("p:", product);
+                        response(res, 201, product);
+                        await productSchema.deleteMany();
+                }
+            }
+
         } else {
-            response(res, 404, {
-                status: 404,
-                result: "Product NOT Updated"
-            })
+            let { id, price, image } = req.body;
+            //console.log("price: ", price, typeof price);
+            price = parseInt(price);
+            //console.log("new price type: ", price, typeof price);
+            //console.log("req.params.id: ",req.params.id);
+            //console.log(req.body.attributes);
+            const product = await productSchema.findByIdAndUpdate(req.params.id, req.body,
+                { new: true });
+            if (product) {
+                response(res, 201, {
+                    status: 201,
+                    result: product
+                })
+            } else {
+                response(res, 404, {
+                    status: 404,
+                    result: "Product NOT Updated"
+                })
+            }
         }
+
     } catch (error) {
+        console.log(error);
         response(res, 500, {
+
             status: 500,
             result: error.message
         });
     }
 }
-
-
 /*********** UpdatedProduct api Ends *************/
 
 
@@ -580,7 +634,7 @@ const updateAttribute = async (req, res) => {
         if (find) {
             //console.log("length: ",find.values.length);
             for (let index = 0; index < find.values.length; index++) {
-                
+
                 if (find.values[index] == values) {
                     console.log("Matched");
                     matched = true

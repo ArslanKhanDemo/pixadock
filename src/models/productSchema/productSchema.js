@@ -46,6 +46,11 @@ let productSchema = new db.Schema({
     maxlength: 255,
     required: true,
   },
+  image: {
+    type: String,
+    minlength: 2,
+    maxlength: 255,
+  },
 });
 
 module.exports = db.model("product", productSchema);

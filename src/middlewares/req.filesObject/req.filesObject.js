@@ -38,6 +38,11 @@ const check_ReqImageFile = async (req, res, next) => {
             req.body.price = product.price
             console.log("price Not Provided");
         }
+        if (req.body.attribute === "" || req.body.attribute === undefined) {
+            let product = await productSchema.findById(req.params.id);
+            req.body.attributes = product.attributes
+            console.log("attributes Not Provided");
+        }
         next();
 
     } catch (error) {
