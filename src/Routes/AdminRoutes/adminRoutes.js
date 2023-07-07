@@ -149,5 +149,61 @@ const updateAttribute = require("../../Controllers/Admin/adminController").updat
 Router.patch("/admin/updateattribute/:id",updateAttribute);
 
 
+/*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*********** Admin User Management Routes ****************     *************/
+
+
+
+/*********** Admin addUser Route  *************/
+
+const addUser = require("../../Controllers/Admin/userManagement").addUser;
+Router.post("/admin/usermanagement/adduser",joi_Middleware,hash_password,unique_User,addUser);
+
+/*********** Admin update User Route  *************/
+
+const updateUser = require("../../Controllers/Admin/userManagement").updateUser;
+Router.patch("/admin/usermanagement/updateuser/:id",hash_password,unique_User,updateUser);
+//Router.patch("/admin/usermanagement/updateuser/:id",updateUser);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = Router;

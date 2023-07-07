@@ -239,6 +239,7 @@ const addProduct = async (req, res) => {
 
 
 /*********** UpdatedProduct api Start *************/
+
 const updateProduct = async (req, res) => {
     try {
         let isThere = false;
@@ -271,7 +272,7 @@ const updateProduct = async (req, res) => {
                         attribute: req.body.attribute,
                         value: req.body.value
                     });
-                    let s = await productSchema.findOneAndUpdate({ _id: req.params.id }, { attributes: arr },{new:true});
+                    let s = await productSchema.findOneAndUpdate({ _id: req.params.id }, { attributes: arr }, { new: true });
                     response(res, 201, s);
                 }
                 if (isThere === true) {
@@ -280,19 +281,14 @@ const updateProduct = async (req, res) => {
                         { _id: req.params.id, 'attributes.attribute': `${req.body.attribute}` },
                         { $set: { 'attributes.$.value': `${req.body.value}` } },
                         { new: true });
-                        console.log("p:", product);
-                        response(res, 201, product);
-                        await productSchema.deleteMany();
+                    response(res, 201, product);
+                    //await productSchema.deleteMany();
                 }
             }
 
         } else {
             let { id, price, image } = req.body;
-            //console.log("price: ", price, typeof price);
             price = parseInt(price);
-            //console.log("new price type: ", price, typeof price);
-            //console.log("req.params.id: ",req.params.id);
-            //console.log(req.body.attributes);
             const product = await productSchema.findByIdAndUpdate(req.params.id, req.body,
                 { new: true });
             if (product) {
@@ -356,20 +352,6 @@ const deleteProduct = async (req, res) => {
 /*********** get all Product catagory api Start *************/
 const getAllCatagory = async (req, res) => {
     try {
-        // let allCategory = await productSchema.aggregate([
-        //     {
-        //       $group: {
-        //         _id: '$category', // Group by the 'category' field.
-        //         uniqueCategories: { $first: '$$ROOT' } // Get the first document in each group.
-        //       }
-        //     },
-        //     {
-        //       $replaceRoot: {
-        //         newRoot: '$uniqueCategories' // Replace the root document with the 'uniqueCategories' object.
-        //       }
-        //     }
-        //   ]);
-
         let allCategory = await categorySchema.find();
         console.log(allCategory.length);
         //await productSchema.deleteMany();
@@ -704,18 +686,27 @@ module.exports = {
     Login,
     Update,
     logOut,
+
     sendCode,
     verification_Code_Submit,
+    
     addProduct,
     updateProduct,
     deleteProduct,
+    
+    addCategories,
     getAllCatagory,
     submitReview,
+    
     addBlogs,
     updateBlog,
     deleteBlog,
-    test,
-    addCategories,
+    
     addAttribute,
-    updateAttribute
+    updateAttribute,
+    
+    
+    
+    
+    test,
 }

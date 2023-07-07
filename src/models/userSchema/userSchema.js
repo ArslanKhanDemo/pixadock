@@ -42,6 +42,12 @@ let userSchema = new db.Schema({
     maxlength: 255,
     required: true,
   },
+  address: {
+    type: String,
+    minlength: 1,
+    maxlength: 255,
+    required: true,
+  },
   termAndConditions: {
     type: String,
   },
@@ -53,7 +59,8 @@ let userSchema = new db.Schema({
   },
   role:{
     type:String,
-    require:true
+    enum:["Customer","Admin","Editor"],
+    required:true
   }
 });
 

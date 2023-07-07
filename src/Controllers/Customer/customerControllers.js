@@ -424,14 +424,16 @@ const deleteItem = async (req, res) => {
 
 module.exports = {
     user_registration,
-    Login,
-    sendCode,
-    dbEmpty,
-    logOut,
-    verification_Code_Submit,
     Update,
+    Login,
+    logOut,
     deleteAccount,
+    
     addToCart,
     myCart,
-    deleteItem
+    deleteItem,
+    
+    sendCode,
+    dbEmpty,
+    verification_Code_Submit,
 }

@@ -10,15 +10,13 @@ const check_ReqImageFile = async (req, res, next) => {
         console.log(req.files);
         if (req.files.length === 1) {
             console.log("Image provided");
-            //let product = await productSchema.findById(req.params.id);
             req.body.image = req.files[0].filename;
         }
-        //console.log("req.body.image:",req.body.image === "");
         if (req.body.image === "") {
             console.log(req.body.image === "");
+            console.log("Image Not Provided");
             let product = await productSchema.findById(req.params.id);
             req.body.image = product.image
-            console.log("Image Not Provided");
         }
         if (req.body.category === "") {
             console.log(req.body.category === "");
