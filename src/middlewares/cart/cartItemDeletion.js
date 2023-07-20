@@ -8,9 +8,12 @@ const deleteItem = async (req,res,next)=>{
     let cart = await cartSchema.findById(process.env.USER_ID);
     let cartArray = cart.productIDs;
     for (let index = 0; index < cartArray.length; index++) {
-        if (cartArray[index] == id) {
+        if (cartArray[index] === id) {
             console.log(cartArray[index]);
-            cartArray.pop(cartArray[index]);
+            //cartArray.pop(cartArray[index]);
+            let removedElement = cartArray.splice(index, 1);
+            console.log("removedElement:",removedElement);
+            console.log("cartArray:",cartArray);
 
             process.env.CART_ARRAY = cartArray;
             break;

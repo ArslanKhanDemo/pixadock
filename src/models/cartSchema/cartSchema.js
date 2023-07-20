@@ -8,7 +8,6 @@ let cart = new db.Schema({
     productIDs: {
         type: [String], // Array of strings
         required: true,
-        unique: true,
       },
 });
 

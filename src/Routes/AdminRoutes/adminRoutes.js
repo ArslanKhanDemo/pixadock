@@ -9,11 +9,13 @@ const sessionCreation = require("../../middlewares/sessionCreation/sessionCreati
 const auth_Middleware = require("../../middlewares/authentication");
 const authorizeUpdation = require("../../middlewares/User/authorizeUpdation/authorizeUpdation");
 const verifyAdmin = require("../../middlewares/Admin/verifyAdmin");
-const multerMiddleware = require("../../middlewares/Multer/multer");
+const multerMiddleware = require("../../middlewares/multer/multer");
 const check_ReqImageFile = require("../../middlewares/req.filesObject/req.filesObject");
 const check_blogUpdation = require("../../middlewares/req.fileObjectforBlogs/blogUpdateVerifier");
 const fileDeleter = require("../../middlewares/fileDeleter/fileDeleter");
-
+const attributeChecker = require("../../middlewares/product/attributeChecker");
+const productSchema = require("../../models/productSchema/productSchema");
+const response = require("../../utility/Response/response");
 
 
 
@@ -128,6 +130,79 @@ Router.delete("/admin/delete/:id",auth_Middleware,verifyAdmin,deleteBlog);
 
 const test = require("../../Controllers/Admin/adminController").test;
 Router.get("/test/:id",fileDeleter,test);
+
+
+/*********** addCategories Route  *************/
+
+const addCategories = require("../../Controllers/Admin/adminController").addCategories;
+Router.post("/admin/addcategories",auth_Middleware,verifyAdmin,multerMiddleware.any(),addCategories);
+
+
+/*********** addAttribute Route  *************/
+
+const addAttribute = require("../../Controllers/Admin/adminController").addAttribute;
+Router.post("/admin/addattribute",attributeChecker,addAttribute);
+
+/*********** updateattribute Route  *************/
+
+const updateAttribute = require("../../Controllers/Admin/adminController").updateAttribute;
+Router.patch("/admin/updateattribute/:id",updateAttribute);
+
+
+/*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*********** Admin User Management Routes ****************     *************/
+
+
+
+/*********** Admin addUser Route  *************/
+
+const addUser = require("../../Controllers/Admin/userManagement").addUser;
+Router.post("/admin/usermanagement/adduser",joi_Middleware,hash_password,unique_User,addUser);
+
+/*********** Admin update User Route  *************/
+
+const updateUser = require("../../Controllers/Admin/userManagement").updateUser;
+Router.patch("/admin/usermanagement/updateuser/:id",hash_password,unique_User,updateUser);
+//Router.patch("/admin/usermanagement/updateuser/:id",updateUser);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

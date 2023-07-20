@@ -77,6 +77,7 @@ const Login = async (req, res) => {
 /*********** Update Starts  *************/
 const Update = async (req, res) => {
     try {
+        console.log(req.body);
         try {
             let updatedRecord = await userSchema.findOneAndUpdate(
                 { _id: process.env.USER_ID },
@@ -298,15 +299,17 @@ const addToCart = async (req, res) => {
         if (proceed) {
             productIDss = currentCart.productIDs;
             productIDss.push(productID);
+            console.log("reached");
             let updatedcart = await cartSchema.findByIdAndUpdate(process.env.USER_ID, {
                 productIDs: productIDss
             }, { new: true });
+            console.log("reached2");
             updatedcart ? response(res, 200, { status: 200, result: updatedcart }) : console.log("No record");
         }
 
     } catch (error) {
-        response(res, 500, {
-            status: 500,
+        response(res, 502, {
+            status: 502,
             error: error.message
         })
     }
@@ -324,13 +327,30 @@ const myCart = async (req, res) => {
 
         let cartValueObj = [];
         let price = 0;
+        console.log(process.env.USER_ID);
         let findMyCart = await cartSchema.findById(process.env.USER_ID);
+        console.log(findMyCart);
         if (findMyCart) {
             for (let index = 0; index < findMyCart.productIDs.length; index++) {
                 let productPrice = await productSchema.findById(findMyCart.productIDs[index]);
-                price = price + productPrice.price
-                cartValueObj.push(productPrice);
+                if (productPrice) {
+                    price = price + productPrice.price
+                    cartValueObj.push(productPrice);
+
+                    console.log("Product Price:", productPrice.price);
+                    console.log("Price:", price);
+                } else {
+                    response(res, 406, {
+                        status: 406,
+                        result: {
+                            Error:findMyCart.productIDs[index] +" "+"Product Not Found"
+                        }
+                    });
+                    break;
+                }
             }
+            //console.log("Price outside:",price);
+            console.log("cartValueObj outside:", cartValueObj);
             response(res, 200, {
                 status: 200,
                 result: {
@@ -338,18 +358,18 @@ const myCart = async (req, res) => {
                     price
                 }
             });
-            process.env.CART_PRICE = price;
+            //process.env.CART_PRICE = price;
         } else {
-            response(res, 404, {
-                status: 404,
+            response(res, 405, {
+                status: 405,
                 result: "You Have An Empty Cart"
             });
         }
 
 
     } catch (error) {
-        response(res, 500, {
-            status: 500,
+        response(res, 501, {
+            status: 501,
             error: error.message
         })
     }
@@ -404,14 +424,16 @@ const deleteItem = async (req, res) => {
 
 module.exports = {
     user_registration,
-    Login,
-    sendCode,
-    dbEmpty,
-    logOut,
-    verification_Code_Submit,
     Update,
+    Login,
+    logOut,
     deleteAccount,
+    
     addToCart,
     myCart,
-    deleteItem
+    deleteItem,
+    
+    sendCode,
+    dbEmpty,
+    verification_Code_Submit,
 }

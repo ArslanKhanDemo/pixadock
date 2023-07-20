@@ -21,12 +21,13 @@ const JoiAuth = (req, res, next) => {
                 'date.format': 'DOB must be in the format "YYYY-MM-DD".'
             }),
             termAndConditions: Joi.string().min(2).max(255).required(),
-            privacyPolicy: Joi.string().min(2).max(255).required()
+            privacyPolicy: Joi.string().min(2).max(255).required(),
+            role:Joi.string().min(2).max(255).required(),
         });
         let result = value.validate(req.body);
         if (result.error) {
             console.log(result.error);
-            return res.status(400).json({result: `${result.error}` });
+            return res.status(400).json({result: `From Validation ${result.error}` });
         } else {
             console.log("Good to go from joi Middleware");
             next();

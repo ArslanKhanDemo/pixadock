@@ -1,6 +1,9 @@
 const userSchema = require("../../models/userSchema/userSchema");
 const tokenSchema = require("../../models/tokenSchema/tokenSchema");
 const productSchema = require("../../models/productSchema/productSchema");
+const categorySchema = require("../../models/categorySchema/categorySchema");
+const attributeSchema = require("../../models/attributeSchema/attributeSchema");
+
 const productReviewSchema = require("../../models/productReviewSchema/productReviewSchema");
 const response = require("../../utility/Response/response");
 const blogSchema = require("../../models/blogsSchema/blogsSchema");
@@ -194,15 +197,18 @@ const verification_Code_Submit = async (req, res) => {
 const addProduct = async (req, res) => {
     try {
 
-        let { category, name, price } = req.body;
+        let { category, name, price, attributes, stock, brand } = req.body;
         price = parseInt(price);
-
-        //console.log("IMAGE;", req);
+        //attributes = JSON.parse(attributes); /** if --> form-data  */
+        console.log(req.files === undefined);
         let productCreated = await productSchema.create({
-            category: category,
-            name: name,
-            price: price,
-            image: req.files[0].filename,
+            category,
+            brand,
+            name,
+            attributes,
+            stock,
+            price,
+            image: req.files ? req.files[0].filename : "No Path"
         });
         if (productCreated) {
             response(res, 201, {
@@ -216,6 +222,7 @@ const addProduct = async (req, res) => {
             });
         }
     } catch (error) {
+        console.log(error);
         response(res, 500, {
             status: 500,
             Error: error.message
@@ -225,39 +232,87 @@ const addProduct = async (req, res) => {
 /*********** addProduct api Ends *************/
 
 
-
+// const product = await productSchema.findOneAndUpdate(
+//     { _id: req.params.id, 'attributes.attribute': "Color" },
+//     { $set: { 'attributes.$.value': "Brown" } },
+//     { new: true });
 
 
 /*********** UpdatedProduct api Start *************/
+
 const updateProduct = async (req, res) => {
     try {
-        let { id, price, image } = req.body;
-        //console.log("price: ", price, typeof price);
-        price = parseInt(price);
-        //console.log("new price type: ", price, typeof price);
-        //console.log("req.params.id: ",req.params.id);
-        //console.log(req.body.category);
-        const product = await productSchema.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (product) {
-            response(res, 201, {
-                status: 201,
-                result: product
-            })
+        let isThere = false;
+        if (req.body.attribute) {
+            console.log(req.body.attribute);
+            console.log("in req.body.attribute");
+            let isAttributes = await productSchema.findById(req.params.id);
+            if (isAttributes.attributes.length === 0) {
+                console.log("In isAttribute");
+                let addAttribute = await productSchema.findOneAndUpdate({
+                    _id: req.params.id
+                }, {
+                    attributes: [{
+                        attribute: req.body.attribute,
+                        value: req.body.value
+                    }]
+                }, { new: true });
+                response(res, 201, addAttribute);
+            } else {
+                console.log("attributes array is not empty");
+                for (let index = 0; index < isAttributes.attributes.length; index++) {
+                    if (isAttributes.attributes[index].attribute === req.body.attribute) {
+                        isThere = true
+                        break;
+                    }
+                }
+                if (isThere === false) {
+                    let arr = [...isAttributes.attributes];
+                    arr.push({
+                        attribute: req.body.attribute,
+                        value: req.body.value
+                    });
+                    let s = await productSchema.findOneAndUpdate({ _id: req.params.id }, { attributes: arr }, { new: true });
+                    response(res, 201, s);
+                }
+                if (isThere === true) {
+                    console.log("isThere === true");
+                    const product = await productSchema.findOneAndUpdate(
+                        { _id: req.params.id, 'attributes.attribute': `${req.body.attribute}` },
+                        { $set: { 'attributes.$.value': `${req.body.value}` } },
+                        { new: true });
+                    response(res, 201, product);
+                    //await productSchema.deleteMany();
+                }
+            }
+
         } else {
-            response(res, 404, {
-                status: 404,
-                result: "Product NOT Updated"
-            })
+            let { id, price, image } = req.body;
+            price = parseInt(price);
+            const product = await productSchema.findByIdAndUpdate(req.params.id, req.body,
+                { new: true });
+            if (product) {
+                response(res, 201, {
+                    status: 201,
+                    result: product
+                })
+            } else {
+                response(res, 404, {
+                    status: 404,
+                    result: "Product NOT Updated"
+                })
+            }
         }
+
     } catch (error) {
+        console.log(error);
         response(res, 500, {
+
             status: 500,
             result: error.message
         });
     }
 }
-
-
 /*********** UpdatedProduct api Ends *************/
 
 
@@ -297,20 +352,7 @@ const deleteProduct = async (req, res) => {
 /*********** get all Product catagory api Start *************/
 const getAllCatagory = async (req, res) => {
     try {
-        let allCategory = await productSchema.aggregate([
-            {
-              $group: {
-                _id: '$category', // Group by the 'category' field.
-                uniqueCategories: { $first: '$$ROOT' } // Get the first document in each group.
-              }
-            },
-            {
-              $replaceRoot: {
-                newRoot: '$uniqueCategories' // Replace the root document with the 'uniqueCategories' object.
-              }
-            }
-          ]);
-
+        let allCategory = await categorySchema.find();
         console.log(allCategory.length);
         //await productSchema.deleteMany();
         response(res, 201, {
@@ -475,6 +517,166 @@ const test = async (req, res) => {
 }
 /*********** test api Ends *************/
 
+/*********** Add Categories api Start *************/
+const addCategories = async (req, res) => {
+    try {
+        let {
+            categoryName,
+            parent
+        } = req.body;
+        // console.log("from admin con backEnd1:");
+        //console.log("from admin con backEnd2:",req.files[0]);
+        console.log(parent === "");
+        if (parent === "") {
+            parent = "No Parent"
+        }
+        let findCategory = await categorySchema.findOne({ categoryName });
+        if (findCategory) {
+            response(res, 201, {
+                status: 201,
+                result: "Category Already Exist"
+            });
+        } else {
+            let categoryAdded = await categorySchema.create(
+                {
+                    image: req.files[0].filename,
+                    categoryName,
+                    parent
+                }
+            );
+            if (categoryAdded) {
+                //await categorySchema.deleteMany();
+                response(res, 201, {
+                    status: 201,
+                    result: categoryAdded
+                });
+
+            } else {
+                response(res, 404, {
+                    status: 404,
+                    result: "Added Catrgory Not Found"
+                });
+            }
+        }
+
+
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** Add Categories api Ends *************/
+
+
+
+/*********** Add Attribute api Start *************/
+const addAttribute = async (req, res) => {
+    try {
+        let { attributeName, slug, values } = req.body;
+        // attributeName = attributeName.toLowerCase();
+        console.log(attributeName);
+        let attribute = await attributeSchema.create({
+            attributeName, slug, values
+        });
+        if (attribute) {
+            // await attributeSchema.deleteMany();
+            response(res, 200, attribute);
+        } else {
+            response(res, 200, "attribute not added");
+        }
+    } catch (error) {
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** Add Attribute api Ends *************/
+
+
+/*********** Add Attribute api Start *************/
+const updateAttribute = async (req, res) => {
+    try {
+        let matched = false;
+        let val2 = [];
+        // let {
+        //     attributeName, slug, values
+        // } = req.body;
+        let values = req.body.values;
+        let val = values.toString().toLowerCase();
+        val2.push(val);
+        values = val2;
+        //console.log("req.prams.id:", typeof req.params.id);
+        let id = req.params.id.toString();
+        req.params.id = id.toLowerCase();
+        //console.log("reached 1");
+        let find = await attributeSchema.findOne({ attributeName: req.params.id });
+        if (find) {
+            //console.log("length: ",find.values.length);
+            for (let index = 0; index < find.values.length; index++) {
+
+                if (find.values[index] == values) {
+                    console.log("Matched");
+                    matched = true
+                    break;
+                }
+            }
+            //console.log("reached 2");
+            if (matched) {
+                console.log(`Error: The Veriante of ${req.params.id} is already added`);
+                response(res, 409, `The Veriante of ${req.params.id} is already added`);
+            } else {
+                if (values == "") {
+                    response(res, 200, `The Veriante of ${req.params.id} can't be empty...`);
+                } else {
+                    //console.log("reached 3");
+                    //console.log("values:",values);
+                    //console.log("val2:",val2);
+                    //console.log("find.values:",find.values);
+                    let attribute = await attributeSchema.updateOne({ attributeName: req.params.id }, {
+                        values: [...val2, ...find.values]
+                    });
+                    //console.log("reached4");
+                    if (attribute) {
+                        // await attributeSchema.deleteMany();
+                        response(res, 200, attribute);
+                    } else {
+                        response(res, 200, "attribute not added");
+                    }
+                }
+            }
+        } else {
+            response(res, 404, `The attribute: ${req.params.id} is not registered`);
+        }
+    } catch (error) {
+        console.log(error);
+        response(res, 500, {
+            status: 500,
+            result: error.message
+        });
+    }
+}
+/*********** Add Attribute api Ends *************/
+
+
+
+
+
+// /*********** Add Attribute api Start *************/
+// const addAttribute = async (req, res) => {
+//     try {
+//        response(res,200,"working")
+//     } catch (error) {
+//         response(res, 500, {
+//             status: 500,
+//             result: error.message
+//         });
+//     }
+// }
+// /*********** Add Attribute api Ends *************/
+
 
 
 
@@ -484,15 +686,27 @@ module.exports = {
     Login,
     Update,
     logOut,
+
     sendCode,
     verification_Code_Submit,
+    
     addProduct,
     updateProduct,
     deleteProduct,
+    
+    addCategories,
     getAllCatagory,
     submitReview,
+    
     addBlogs,
     updateBlog,
     deleteBlog,
-    test
+    
+    addAttribute,
+    updateAttribute,
+    
+    
+    
+    
+    test,
 }

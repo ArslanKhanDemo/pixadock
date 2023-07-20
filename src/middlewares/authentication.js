@@ -8,7 +8,7 @@ const authToken = async (req, res, next) => {
     try {
 
 
-        console.log("req.body from initial admin",req.body);
+        //console.log("req.body from initial admin",req);
 
         console.log("From authentication Middleware start");
         let barrerToken = req.headers["authorization"];
@@ -17,8 +17,8 @@ const authToken = async (req, res, next) => {
         
         if (token == null) {
             //console.log("The Token Is NULL");
-            response(res, 404, {
-                status: 404,
+            response(res, 401, {
+                status: 401,
                 result: "No Token"
             });
         } else {
@@ -32,14 +32,14 @@ const authToken = async (req, res, next) => {
                     console.log("From authentication Middleware Ends");
                     next();
                 } else {
-                    response(res, 404, {
-                        status: 404,
+                    response(res, 402, {
+                        status: 402,
                         result: "Un_Authorize request"
                     });
                 }
             } else {
-                response(res, 404, {
-                    status: 404,
+                response(res, 403, {
+                    status: 403,
                     result: "Please Login To Gain Access"
             })}
         }
