@@ -329,24 +329,28 @@ const myCart = async (req, res) => {
         let price = 0;
         console.log(process.env.USER_ID);
         let findMyCart = await cartSchema.findById(process.env.USER_ID);
-        console.log(findMyCart);
+        console.log("findMyCart",findMyCart);
         if (findMyCart) {
             for (let index = 0; index < findMyCart.productIDs.length; index++) {
-                let productPrice = await productSchema.findById(findMyCart.productIDs[index]);
-                if (productPrice) {
-                    price = price + productPrice.price
-                    cartValueObj.push(productPrice);
+                let product = await productSchema.findById(findMyCart.productIDs[index]);
+                if (product) {
+                    console.log("product",product);
+                    price = price + product.price
+                    cartValueObj.push(product);
 
-                    console.log("Product Price:", productPrice.price);
+                    console.log("Product Price:", product.price);
                     console.log("Price:", price);
                 } else {
-                    response(res, 406, {
-                        status: 406,
-                        result: {
-                            Error:findMyCart.productIDs[index] +" "+"Product Not Found"
-                        }
+                    cartValueObj.push({
+                        product:`This Product:${findMyCart.productIDs[index]} is no longer exist`
                     });
-                    break;
+                    // response(res, 406, {
+                    //     status: 406,
+                    //     result: {
+                    //         Error:findMyCart.productIDs[index] +" "+"Product Not Found"
+                    //     }
+                    // });
+                    // break;
                 }
             }
             //console.log("Price outside:",price);

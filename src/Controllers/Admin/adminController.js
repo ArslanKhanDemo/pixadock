@@ -101,7 +101,6 @@ const Update = async (req, res) => {
 /*********** LoginOut  *************/
 const logOut = async (req, res) => {
     try {
-        console.log();
         if (process.env.USER_ID) { // if system continues without any cutoff
             let distroySession = await tokenSchema.findOneAndDelete({ userID: process.env.USER_ID });
             console.log("with process.env.USER_ID / if system continues without any cutoff");
@@ -198,6 +197,7 @@ const addProduct = async (req, res) => {
     try {
 
         let { category, name, price, attributes, stock, brand } = req.body;
+        console.log("req.body:",req.body);
         price = parseInt(price);
         //attributes = JSON.parse(attributes); /** if --> form-data  */
         console.log(req.files === undefined);
@@ -223,8 +223,8 @@ const addProduct = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        response(res, 500, {
-            status: 500,
+        response(res, 501, {
+            status: 501,
             Error: error.message
         });
     }
@@ -321,6 +321,7 @@ const deleteProduct = async (req, res) => {
     try {
         let { id } = req.body;
         console.log(id);
+        console.log(req.body);
         const product = await productSchema.findByIdAndDelete(id);
         if (product) {
             response(res, 201, {
